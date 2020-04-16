@@ -12,7 +12,7 @@ class Offer extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'description', 'location', 'photos'
+        'title', 'description', 'location', 'photos', 'price'
     ];
 
     public function owner()
