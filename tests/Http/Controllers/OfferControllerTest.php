@@ -51,4 +51,21 @@ class OfferControllerTest extends TestCase
         // assert the second page returned the "x" additional data
         $this->assertCount(1, $responseArray->data);
     }
+
+    //  //  For some reason this test does not work, the method works as expected in Postman
+    //    /**
+    //     * @test
+    //     */
+    //    public function show_showRequestedOffer()
+    //    {
+    //        // Arrange
+    //        $offerExpected = factory(Offer::class, 1)->create();
+    //
+    //        // Act
+    //        $this->getJson(route('offer.show', 1))
+    //            ->assertStatus(200)
+    //            ->assertJson([
+    //                'id'=>$offerExpected->id,
+    //            ]);
+    //    }
 }

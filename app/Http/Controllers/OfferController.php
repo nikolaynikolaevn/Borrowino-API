@@ -33,11 +33,11 @@ class OfferController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Offer  $offer
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Offer $offer)
     {
-        //
+        return response()->json($offer, 200);
     }
 
     /**
