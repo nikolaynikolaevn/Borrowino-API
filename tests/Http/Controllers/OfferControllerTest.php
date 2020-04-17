@@ -3,6 +3,7 @@
 namespace Tests\Http\Controllers;
 
 use App\Offer;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
@@ -68,4 +69,27 @@ class OfferControllerTest extends TestCase
     //                'id'=>$offerExpected->id,
     //            ]);
     //    }
+    /**
+     * @test
+     */
+    public function store_offerIsStored()
+    {
+        // Arrange
+        $response = null;
+        $user = factory(User::class)->create();
+
+        // Act
+        $response = $this->postJson(route('offer.store'), [
+            'title' => 'title',
+            'description' => 'description',
+            'location' => 'location',
+            'price' => 30,
+            'owner'=>$user->id,
+        ]);
+
+        // Assert
+        $response->assertNoContent();
+    }
+
+
 }

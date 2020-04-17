@@ -22,11 +22,26 @@ class OfferController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $offer = $request->validate([
+            'title' => 'required|min:5|max:25',
+            'description' => 'required',
+            'location' => 'required',
+            'price' => 'required|numeric',
+        ]);
+
+        $offer = new Offer();
+        $offer->title = $request->title;
+        $offer->description = $request->description;
+        $offer->location = $request->location;
+        $offer->price = $request->price;
+        $offer->owner = $request->owner;
+        $offer->save();
+
+        return response()->json(null, 204);
     }
 
     /**
