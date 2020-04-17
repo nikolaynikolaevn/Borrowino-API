@@ -91,5 +91,37 @@ class OfferControllerTest extends TestCase
         $response->assertNoContent();
     }
 
+    /**
+     * @test
+     */
+    public function destroy_offerIsDestroyedWhenOwner()
+    {
+        // Arrange
+        $offer  = factory(Offer::class, 1)->create();
+        $user = User::find(1);
+
+        // Act
+        $response = $this->actingAs($user)->deleteJson(route('offer.destroy', 1));
+
+        // Assert
+        $response->assertNoContent();
+    }
+
+    /**
+     * @test
+     */
+    public function destroy_offerIsNotDestroyedWhenNotOwner()
+    {
+        // Arrange
+        $offer = factory(Offer::class, 1)->create(); // A user is already created in this factory
+        $user = factory(User::class)->create();
+
+        // Act
+        $response = $this->actingAs($user)->deleteJson(route('offer.destroy', 1));
+
+        // Assert
+        $response->assertStatus(401);
+    }
+
 
 }

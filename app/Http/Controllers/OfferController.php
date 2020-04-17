@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Offer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OfferController extends Controller
 {
@@ -70,11 +71,19 @@ class OfferController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Offer  $offer
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Offer $offer)
+    public function destroy($id)
     {
-        //
+        // @TODO: Change this method to include type hinting. For some odd reason this does not work otherwise
+        $offer = Offer::find($id);
+
+        if (Auth::user()->id != $offer->owner) {
+            return response()->json(['Message'=>'Unauthorized'],401);
+        }
+
+        $offer->delete();
+        return response()->json(null, 204);
     }
 }
