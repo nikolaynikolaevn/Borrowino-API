@@ -65,7 +65,6 @@ class OfferControllerTest extends TestCase
 
         // Act
         $response = $this->getJson(route('offer.show', 1));
-        $actual = json_decode($response->getContent(),true);
 
         // Assert
         $response->assertStatus(200)
