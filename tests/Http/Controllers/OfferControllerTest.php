@@ -61,14 +61,14 @@ class OfferControllerTest extends TestCase
     public function show_showRequestedOffer()
     {
         // Arrange
-        $offerExpected = factory(Offer::class, 1)->create();
+        $offerExpected = factory(Offer::class)->create();
 
         // Act
         $response = $this->getJson(route('offer.show', 1));
 
         // Assert
         $response->assertStatus(200)
-            ->assertJson($offerExpected->toArray()[0]);
+            ->assertJson($offerExpected->toArray());
     }
 
     /**
