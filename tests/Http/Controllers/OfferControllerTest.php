@@ -53,22 +53,25 @@ class OfferControllerTest extends TestCase
         $this->assertCount(1, $responseArray->data);
     }
 
-    //  //  For some reason this test does not work, the method works as expected in Postman
-    //    /**
-    //     * @test
-    //     */
-    //    public function show_showRequestedOffer()
-    //    {
-    //        // Arrange
-    //        $offerExpected = factory(Offer::class, 1)->create();
-    //
-    //        // Act
-    //        $this->getJson(route('offer.show', 1))
-    //            ->assertStatus(200)
-    //            ->assertJson([
-    //                'id'=>$offerExpected->id,
-    //            ]);
-    //    }
+    //  For some reason this test does not work, the method works as expected in Postman
+
+    /**
+     * @test
+     */
+    public function show_showRequestedOffer()
+    {
+        // Arrange
+        $offerExpected = factory(Offer::class, 1)->create();
+
+        // Act
+        $response = $this->getJson(route('offer.show', 1));
+        $actual = json_decode($response->getContent(),true);
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJson($offerExpected->toArray()[0]);
+    }
+
     /**
      * @test
      */
@@ -84,7 +87,7 @@ class OfferControllerTest extends TestCase
             'description' => 'description',
             'location' => 'location',
             'price' => 30,
-            'owner'=>$user->id,
+            'owner' => $user->id,
         ]);
 
         // Assert
@@ -97,7 +100,7 @@ class OfferControllerTest extends TestCase
     public function destroy_offerIsDestroyedWhenOwner()
     {
         // Arrange
-        $offer  = factory(Offer::class, 1)->create();
+        $offer = factory(Offer::class, 1)->create();
         $user = User::find(1);
 
         // Act
@@ -121,6 +124,28 @@ class OfferControllerTest extends TestCase
 
         // Assert
         $response->assertStatus(401);
+    }
+
+    /**
+     * @test
+     */
+    public function update_offerIsUpdatedWhenOwner()
+    {
+        // Arrange
+        $offer = factory(Offer::class, 1)->create(); // A user is already created in this factory
+        $user = User::find(1);
+
+        $updatedOffer = new Offer();
+        $updatedOffer->title = "title";
+        $updatedOffer->description = "description";
+        $updatedOffer->location = "location";
+        $updatedOffer->price = 3.4;
+
+        // Act
+        $response = $this->actingAs($user)->patchJson(route('offer.update', 1), ['offer' => $updatedOffer]);
+
+        // Assert
+        $response->assertNoContent();
     }
 
 

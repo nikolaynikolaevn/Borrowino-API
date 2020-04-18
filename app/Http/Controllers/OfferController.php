@@ -27,7 +27,7 @@ class OfferController extends Controller
      */
     public function store(Request $request)
     {
-        $offer = $request->validate([
+        $request->validate([
             'title' => 'required|min:5|max:25',
             'description' => 'required',
             'location' => 'required',
@@ -48,24 +48,37 @@ class OfferController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Offer  $offer
+     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Offer $offer)
+    public function show($id)
     {
+        $offer = Offer::find($id);
         return response()->json($offer, 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Offer  $offer
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Offer $offer)
+    public function update(Request $request, $id)
     {
-        //
+        $offer = Offer::find($id);
+        if (Auth::user()->id != $offer->owner) {
+            return response()->json(['Message'=>'Unauthorized'],401);
+        }
+        $validatedData = $request->validate([
+            'title' => 'required|min:3|max:25',
+            'description' => 'required',
+            'location' => 'required',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $offer->update($validatedData);
+        return response()->json(null, 204);
     }
 
     /**
