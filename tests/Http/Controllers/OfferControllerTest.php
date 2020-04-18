@@ -78,19 +78,30 @@ class OfferControllerTest extends TestCase
     {
         // Arrange
         $response = null;
-        $user = factory(User::class)->create();
+        $TITLE = 'title';
+        $DESCRIPTION = 'description';
+        $LOCATION = 'location';
+        $PRICE = 30;
+        $OWNER = 1;
 
         // Act
         $response = $this->postJson(route('offer.store'), [
-            'title' => 'title',
-            'description' => 'description',
-            'location' => 'location',
-            'price' => 30,
-            'owner' => $user->id,
+            'title' => $TITLE,
+            'description' => $DESCRIPTION,
+            'location' => $LOCATION,
+            'price' => $PRICE,
+            'owner' => $OWNER,
         ]);
 
         // Assert
         $response->assertNoContent();
+        $this->assertDatabaseHas('offers', [
+            'title' => $TITLE,
+            'description' => $DESCRIPTION,
+            'location' => $LOCATION,
+            'price' => $PRICE,
+            'owner' => $OWNER,
+        ]);
     }
 
     /**
