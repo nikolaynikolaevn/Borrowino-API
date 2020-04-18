@@ -156,20 +156,28 @@ class OfferControllerTest extends TestCase
     public function update_offerIsUpdatedWhenOwner()
     {
         // Arrange
-        $offer = factory(Offer::class, 1)->create(); // A user is already created in this factory
+        $offer = factory(Offer::class)->create([
+            // We do this because the timestamps are not equal when they are returned from the database.
+            // This is normal behavior
+            'created_at' => null,
+            'updated_at' => null,
+        ]);
         $user = User::find(1);
 
         $updatedOffer = new Offer();
+        $updatedOffer->id = 1;
         $updatedOffer->title = "title";
         $updatedOffer->description = "description";
         $updatedOffer->location = "location";
         $updatedOffer->price = 3.4;
 
         // Act
-        $response = $this->actingAs($user)->patchJson(route('offer.update', 1), ['offer' => $updatedOffer]);
+        $this->assertDatabaseHas('offers', $offer->toArray());
+        $response = $this->actingAs($user)->patchJson(route('offer.update', 1), $updatedOffer->toArray());
 
         // Assert
         $response->assertNoContent();
+        $this->assertDatabaseHas('offers', $updatedOffer->toArray());
     }
 
 

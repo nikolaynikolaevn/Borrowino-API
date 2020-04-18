@@ -67,9 +67,11 @@ class OfferController extends Controller
     public function update(Request $request, $id)
     {
         $offer = Offer::find($id);
+
         if (Auth::user()->id != $offer->owner) {
             return response()->json(['Message'=>'Unauthorized'],401);
         }
+
         $validatedData = $request->validate([
             'title' => 'required|min:3|max:25',
             'description' => 'required',
