@@ -110,12 +110,12 @@ class OfferControllerTest extends TestCase
     public function destroy_offerIsDestroyedWhenOwner()
     {
         // Arrange
-        $offer = factory(Offer::class)->create(
-            [ // We do this because the timestamps are not equal when they are returned from the database. This is normal behavior
-                'created_at' => null,
-                'updated_at' => null,
-            ]
-        );
+        $offer = factory(Offer::class)->create([
+            // We do this because the timestamps are not equal when they are returned from the database.
+            // This is normal behavior
+            'created_at' => null,
+            'updated_at' => null,
+        ]);
         $user = User::find(1);
 
 
@@ -134,13 +134,19 @@ class OfferControllerTest extends TestCase
     public function destroy_offerIsNotDestroyedWhenNotOwner()
     {
         // Arrange
-        $offer = factory(Offer::class, 1)->create(); // A user is already created in this factory
+        $offer = factory(Offer::class)->create([
+            // We do this because the timestamps are not equal when they are returned from the database.
+            // This is normal behavior
+            'created_at' => null,
+            'updated_at' => null,
+        ]); // A user is already created in this factory
         $user = factory(User::class)->create();
 
         // Act
         $response = $this->actingAs($user)->deleteJson(route('offer.destroy', 1));
 
         // Assert
+        $this->assertDatabaseHas('offers', $offer->toArray());
         $response->assertStatus(401);
     }
 
