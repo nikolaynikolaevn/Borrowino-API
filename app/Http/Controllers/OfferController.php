@@ -39,7 +39,7 @@ class OfferController extends Controller
         $offer->description = $request->description;
         $offer->location = $request->location;
         $offer->price = $request->price;
-        $offer->owner = $request->owner;
+        $offer->owner = Auth::user()->id;
         $offer->save();
 
         return response()->json(null, 204);
