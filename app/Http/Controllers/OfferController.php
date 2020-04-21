@@ -53,7 +53,7 @@ class OfferController extends Controller
      */
     public function show($id)
     {
-        $offer = Offer::find($id);
+        $offer = Offer::findOrFail($id);
         return response()->json($offer, 200);
     }
 
@@ -66,7 +66,7 @@ class OfferController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $offer = Offer::find($id);
+        $offer = Offer::findOrFail($id);
 
         if (Auth::user()->id != $offer->owner) {
             return response()->json(['Message'=>'Unauthorized'],401);
@@ -92,7 +92,7 @@ class OfferController extends Controller
     public function destroy($id)
     {
         // @TODO: Change this method to include type hinting. For some odd reason this does not work otherwise
-        $offer = Offer::find($id);
+        $offer = Offer::findOrFail($id);
 
         if (Auth::user()->id != $offer->owner) {
             return response()->json(['Message'=>'Unauthorized'],401);
