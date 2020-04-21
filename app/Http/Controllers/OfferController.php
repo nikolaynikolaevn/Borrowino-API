@@ -73,7 +73,7 @@ class OfferController extends Controller
         }
 
         $validatedData = $request->validate([
-            'title' => 'required|min:3|max:25',
+            'title' => 'required|min:5|max:25',
             'description' => 'required',
             'location' => 'required',
             'price' => 'required|numeric|min:0',
