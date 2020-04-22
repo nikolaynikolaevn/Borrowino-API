@@ -9,6 +9,7 @@ use Tests\TestCase;
 class RouterTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * @test
      */
@@ -24,7 +25,6 @@ class RouterTest extends TestCase
         $request->assertStatus(200);
     }
 
-    use RefreshDatabase;
     /**
      * @test
      */
