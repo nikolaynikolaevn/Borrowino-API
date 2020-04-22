@@ -13,16 +13,14 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('/register', 'AuthController@register')->name('register');
 Route::post('/login', 'AuthController@login')->name('login');
 
-Route::middleware('auth:api')->group(function (){
-    Route::apiResource('offer', 'OfferController');
+Route::get('offer', 'OfferController@index')->name('offer.index');
+Route::get('offer/{offer}', 'OfferController@show')->name('offer.show');
+
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('offer', 'OfferController')->except(['index', 'show']);
 });
 
 
