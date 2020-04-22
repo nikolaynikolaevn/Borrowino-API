@@ -82,15 +82,15 @@ class OfferControllerTest extends TestCase
         $DESCRIPTION = 'description';
         $LOCATION = 'location';
         $PRICE = 30;
-        $OWNER = 1;
+
+        $user = factory(User::class)->create();
 
         // Act
-        $response = $this->postJson(route('offer.store'), [
+        $response = $this->actingAs($user)->postJson(route('offer.store'), [
             'title' => $TITLE,
             'description' => $DESCRIPTION,
             'location' => $LOCATION,
             'price' => $PRICE,
-            'owner' => $OWNER,
         ]);
 
         // Assert
@@ -100,7 +100,6 @@ class OfferControllerTest extends TestCase
             'description' => $DESCRIPTION,
             'location' => $LOCATION,
             'price' => $PRICE,
-            'owner' => $OWNER,
         ]);
     }
 
