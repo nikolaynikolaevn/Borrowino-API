@@ -20,7 +20,7 @@ Route::get('offer', 'OfferController@index')->name('offer.index');
 Route::get('offer/{offer}', 'OfferController@show')->name('offer.show');
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('logout', 'AuthController@logout')->name('logout');
+    Route::post('logout', 'AuthController@logout')->name('logout');
 
     Route::apiResource('offer', 'OfferController')->except(['index', 'show']);
 });
