@@ -20,7 +20,7 @@ class CreateOfferRequestsTable extends Migration
             $table->timestamp('from');
             $table->timestamp('until');
             $table->text('description')->nullable();
-            $table->enum('status', ['accepted', 'declined']);
+            $table->enum('status', ['accepted', 'declined'])->nullable();
             $table->timestamps();
         });
     }
