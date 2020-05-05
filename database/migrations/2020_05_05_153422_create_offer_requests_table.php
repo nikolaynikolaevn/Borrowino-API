@@ -15,6 +15,12 @@ class CreateOfferRequestsTable extends Migration
     {
         Schema::create('offer_requests', function (Blueprint $table) {
             $table->id();
+            $table->integer('borrower');
+            $table->integer('offer');
+            $table->timestamp('from');
+            $table->timestamp('until');
+            $table->text('description')->nullable();
+            $table->enum('status', ['accepted', 'declined']);
             $table->timestamps();
         });
     }
