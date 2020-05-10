@@ -6,6 +6,9 @@ use App\Offer;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class OfferControllerTest extends TestCase
@@ -41,7 +44,8 @@ class OfferControllerTest extends TestCase
         $queryParameters = 'page=2';
 
         // Act
-        $response = $this->get('/api/offers' . '?' . $queryParameters); // this is a custom function. you can use $this->get(...)
+//        $response = $this->get('/api/offers' . '?' . $queryParameters); // this is a custom function. you can use $this->get(...)
+        $response = $this->get(route('offer.index') . '?' . $queryParameters); // this is a custom function. you can use $this->get(...)
 
         // Assert
         $this->assertEquals('200', $response->getStatusCode());
@@ -83,7 +87,11 @@ class OfferControllerTest extends TestCase
         $LOCATION = 'location';
         $PRICE = 30;
 
+        Storage::fake('images');
+
         $user = factory(User::class)->create();
+        $image1 = 'image1.jpg';
+        $image2 = 'image2.jpg';
 
         // Act
         $response = $this->actingAs($user)->postJson(route('offer.store'), [
@@ -91,7 +99,12 @@ class OfferControllerTest extends TestCase
             'description' => $DESCRIPTION,
             'location' => $LOCATION,
             'price' => $PRICE,
+            'images' => [UploadedFile::fake()->image($image1), UploadedFile::fake()->image($image2)],
         ]);
+
+        $imagesInDatabase = DB::table('images')->where('path_to_image', 'like', '%' . $image1 . '%')
+            ->orWhere('path_to_image', 'like', '%' . $image2 . '%')
+            ->get();
 
         // Assert
         $response->assertNoContent();
@@ -100,7 +113,13 @@ class OfferControllerTest extends TestCase
             'description' => $DESCRIPTION,
             'location' => $LOCATION,
             'price' => $PRICE,
+            'images' => true,
         ]);
+
+        $this->assertEquals(2, count($imagesInDatabase));
+
+        Storage::disk('local')->assertExists($imagesInDatabase[0]->path_to_image);
+        Storage::disk('local')->assertExists($imagesInDatabase[1]->path_to_image);
     }
 
     /**
