@@ -44,7 +44,8 @@ class OfferControllerTest extends TestCase
         $queryParameters = 'page=2';
 
         // Act
-        $response = $this->get('/api/offers' . '?' . $queryParameters); // this is a custom function. you can use $this->get(...)
+//        $response = $this->get('/api/offers' . '?' . $queryParameters); // this is a custom function. you can use $this->get(...)
+        $response = $this->get(route('offer.index') . '?' . $queryParameters); // this is a custom function. you can use $this->get(...)
 
         // Assert
         $this->assertEquals('200', $response->getStatusCode());
