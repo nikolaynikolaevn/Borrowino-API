@@ -19,4 +19,9 @@ class OfferRequest extends Model
         $this->status = 'declined';
         $this->save();
     }
+
+    public function borrower()
+    {
+        return $this->belongsTo(User::class, 'borrower');
+    }
 }
