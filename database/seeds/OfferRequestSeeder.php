@@ -1,5 +1,6 @@
 <?php
 
+use App\OfferRequest;
 use Illuminate\Database\Seeder;
 
 class OfferRequestSeeder extends Seeder
@@ -11,6 +12,6 @@ class OfferRequestSeeder extends Seeder
      */
     public function run()
     {
-        //
+        factory(OfferRequest::class, 50)->create();
     }
 }
