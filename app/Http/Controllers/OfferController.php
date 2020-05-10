@@ -44,7 +44,7 @@ class OfferController extends Controller
         $offer->owner = Auth::user()->id;
         $offer->save();
 
-        if (count($request->images) != 0) {
+        if (array_key_exists('images', $validatedData)) {
             $offer->images = true;
             $offer->save();
 
@@ -96,7 +96,7 @@ class OfferController extends Controller
 //            ->where('resource_id', $offer->id)
 //            ->get();
 
-        if ($imageCount != 0) {
+        if (array_key_exists('images', $validatedData)) {
             $offer->images = true;
             $offer->save();
 
