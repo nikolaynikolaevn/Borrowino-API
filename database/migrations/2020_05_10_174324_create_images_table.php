@@ -15,7 +15,8 @@ class CreateImagesTable extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['profile_image', 'offer_image']);
+            $table->integer('resource_id')->index();
+            $table->enum('type', ['profile_image', 'offer_image'])->index();
             $table->string('path_to_image');
             $table->timestamps();
         });
