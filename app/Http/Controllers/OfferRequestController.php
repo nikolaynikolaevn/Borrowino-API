@@ -17,7 +17,7 @@ class OfferRequestController extends Controller
     public function index()
     {
         $offerRequests = OfferRequest::paginate(15);
-        return response()->json($offerRequests, 200);
+        return response()->json($offerRequests, 206);
     }
 
     /**
