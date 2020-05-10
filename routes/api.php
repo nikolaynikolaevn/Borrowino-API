@@ -26,6 +26,7 @@ Route::get('/admin/viewAllOffer', 'adminController@viewAllOffer')->name('admin.v
 Route::delete('admin/user/{id}', 'adminController@deleteUser')->name('offer.deleteUser');
 Route::delete('admin/offer/{id}', 'adminController@deleteOffer')->name('offer.deleteOffer');
 
+Route::apiResource('offer-requests', 'OfferRequestController');
 
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', 'AuthController@logout')->name('logout');
