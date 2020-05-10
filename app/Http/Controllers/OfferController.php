@@ -86,9 +86,28 @@ class OfferController extends Controller
             'description' => 'required',
             'location' => 'required',
             'price' => 'required|numeric|min:0',
+            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
         ]);
 
         $offer->update($validatedData);
+        $imageCount = count($request->images);
+
+//        $imagesInDatabase = Image::where('resource_type', 'offer_image')
+//            ->where('resource_id', $offer->id)
+//            ->get();
+
+        if ($imageCount != 0) {
+            $offer->images = true;
+            $offer->save();
+
+            ImageController::uploadImages($request->images, $offer->id, 'offer_image');
+        }
+
+//        if ($imageCount = 0 && count($imagesInDatabase) == 0) {
+//            $offer->images = false;
+//            $offer->save;
+//        }
+
         return response()->json(null, 204);
     }
 
