@@ -48,18 +48,7 @@ class OfferController extends Controller
             $offer->images = true;
             $offer->save();
 
-            foreach ($request->file('images') as $image) {
-                $name = microtime() . '.' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
-                $path = 'images/';
-
-                $imageDatabaseReference = new Image();
-                $imageDatabaseReference->resource_id = $offer->id;
-                $imageDatabaseReference->path_to_image = $path . $name;
-                $imageDatabaseReference->type = 'offer_image';
-                $imageDatabaseReference->save();
-
-                $image->storeAs($path, $name);
-            }
+            ImageController::uploadImages($request->images, $offer->id, 'offer_image');
         }
 
         return response()->json(null, 204);
