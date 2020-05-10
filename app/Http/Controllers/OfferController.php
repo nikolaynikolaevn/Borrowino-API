@@ -28,19 +28,19 @@ class OfferController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'title' => 'required|min:5|max:25',
             'description' => 'required',
             'location' => 'required',
-            'price' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
             'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
         ]);
 
         $offer = new Offer();
-        $offer->title = $request->title;
-        $offer->description = $request->description;
-        $offer->location = $request->location;
-        $offer->price = $request->price;
+        $offer->title = $validatedData['title'];
+        $offer->description = $validatedData['description'];
+        $offer->location = $validatedData['location'];
+        $offer->price = $validatedData['price'];
         $offer->owner = Auth::user()->id;
         $offer->save();
 
@@ -48,7 +48,7 @@ class OfferController extends Controller
             $offer->images = true;
             $offer->save();
 
-            ImageController::uploadImages($request->images, $offer->id, 'offer_image');
+            ImageController::uploadImages($validatedData['images'], $offer->id, 'offer_image');
         }
 
         return response()->json(null, 204);
@@ -90,7 +90,6 @@ class OfferController extends Controller
         ]);
 
         $offer->update($validatedData);
-        $imageCount = count($request->images);
 
 //        $imagesInDatabase = Image::where('resource_type', 'offer_image')
 //            ->where('resource_id', $offer->id)
@@ -100,7 +99,7 @@ class OfferController extends Controller
             $offer->images = true;
             $offer->save();
 
-            ImageController::uploadImages($request->images, $offer->id, 'offer_image');
+            ImageController::uploadImages($validatedData['images'], $offer->id, 'offer_image');
         }
 
 //        if ($imageCount = 0 && count($imagesInDatabase) == 0) {
