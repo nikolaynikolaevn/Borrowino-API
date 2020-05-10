@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Image;
 use App\Offer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class OfferController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
@@ -32,6 +33,7 @@ class OfferController extends Controller
             'description' => 'required',
             'location' => 'required',
             'price' => 'required|numeric',
+            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
         ]);
 
         $offer = new Offer();
@@ -41,6 +43,24 @@ class OfferController extends Controller
         $offer->price = $request->price;
         $offer->owner = Auth::user()->id;
         $offer->save();
+
+        if (count($request->images) != 0) {
+            $offer->images = true;
+            $offer->save();
+
+            foreach ($request->file('images') as $image) {
+                $name = microtime() . '.' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
+                $path = 'images/';
+
+                $imageDatabaseReference = new Image();
+                $imageDatabaseReference->resource_id = $offer->id;
+                $imageDatabaseReference->path_to_image = $path . $name;
+                $imageDatabaseReference->type = 'offer_image';
+                $imageDatabaseReference->save();
+
+                $image->storeAs($path, $name);
+            }
+        }
 
         return response()->json(null, 204);
     }
@@ -69,7 +89,7 @@ class OfferController extends Controller
         $offer = Offer::findOrFail($id);
 
         if (Auth::user()->id != $offer->owner) {
-            return response()->json(['Message'=>'Unauthorized'],401);
+            return response()->json(['Message' => 'Unauthorized'], 401);
         }
 
         $validatedData = $request->validate([
@@ -95,7 +115,7 @@ class OfferController extends Controller
         $offer = Offer::findOrFail($id);
 
         if (Auth::user()->id != $offer->owner) {
-            return response()->json(['Message'=>'Unauthorized'],401);
+            return response()->json(['Message' => 'Unauthorized'], 401);
         }
 
         $offer->delete();
