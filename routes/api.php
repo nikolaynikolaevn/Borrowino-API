@@ -18,7 +18,6 @@ Route::post('/login', 'AuthController@login')->name('login');
 
 Route::get('offers', 'OfferController@index')->name('offer.index');
 Route::get('offers/{offer}', 'OfferController@show')->name('offer.show');
-Route::post('offers', 'OfferController@store')->name('offer.store');
 
 Route::get('/admin/userDetails', 'adminController@showUserDetails')->name('admin.showUserDetails');
 Route::get('/admin/userDetails{id}', 'adminController@showUserDetails')->name('admin.showUserDetails');
@@ -31,7 +30,7 @@ Route::delete('admin/offer/{id}', 'adminController@deleteOffer')->name('offer.de
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', 'AuthController@logout')->name('logout');
 
-    Route::apiResource('offer', 'OfferController')->except(['index', 'show']);
+    Route::apiResource('offers', 'OfferController')->except(['index', 'show']);
 });
 
 
