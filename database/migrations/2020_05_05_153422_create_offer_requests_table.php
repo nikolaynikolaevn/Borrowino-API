@@ -17,8 +17,8 @@ class CreateOfferRequestsTable extends Migration
             $table->id();
             $table->integer('borrower');
             $table->integer('offer');
-            $table->timestamp('from');
-            $table->timestamp('until');
+            $table->timestamp('from')->nullable();
+            $table->timestamp('until')->nullable();
             $table->text('description')->nullable();
             $table->enum('status', ['accepted', 'declined'])->nullable();
             $table->timestamps();
