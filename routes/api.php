@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', 'AuthController@register')->name('register');
 Route::post('/login', 'AuthController@login')->name('login');
 
-Route::get('offers', 'OfferController@index')->name('offer.index');
-Route::get('offers/{offer}', 'OfferController@show')->name('offer.show');
+Route::get('offers', 'OfferController@index')->name('offers.index');
+Route::get('offers/{offer}', 'OfferController@show')->name('offers.show');
 
 Route::get('/admin/userDetails', 'adminController@showUserDetails')->name('admin.showUserDetails');
 Route::get('/admin/userDetails{id}', 'adminController@showUserDetails')->name('admin.showUserDetails');
