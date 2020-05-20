@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Offer;
 use App\OfferRequest;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -84,7 +85,7 @@ class OfferRequestController extends Controller
         }
 
         $offerRequest->update($validatedData);
-        return response()->json(null, 204);
+        return response()->json($offerRequest, 204);
     }
 
     /**
