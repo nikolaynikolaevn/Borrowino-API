@@ -85,7 +85,7 @@ class OfferRequestController extends Controller
         }
 
         $offerRequest->update($validatedData);
-        return response()->json($offerRequest, 204);
+        return response()->json($offerRequest, 200);
     }
 
     /**
