@@ -44,7 +44,7 @@ class OfferRequestController extends Controller
         $offerRequest->description = $request->description;
         $offerRequest->save();
 
-        return response()->json(null, 201);
+        return response()->json($offerRequest, 201);
     }
 
     /**
