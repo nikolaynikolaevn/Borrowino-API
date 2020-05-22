@@ -23,6 +23,9 @@ Route::apiResource('offer-requests', 'OfferRequestController');
 
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', 'AuthController@logout')->name('logout');
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 
     Route::apiResource('offers', 'OfferController')->except(['index', 'show']);
 
