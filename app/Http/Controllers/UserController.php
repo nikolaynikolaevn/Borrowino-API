@@ -46,11 +46,21 @@ class UserController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, User $user)
     {
-        dd($request);
+        $validatedData = $request->validate([
+            'name' => 'max:55',
+            'email' => 'email|unique:users',
+            'password' => 'confirmed', // This means that there needs to be a field called password_confirmation
+        ]);
+
+        if (Auth::user()->id === $user->id) {
+            $user->update($validatedData);
+            return response()->json($user, 200);
+        }
+        return response()->json(['Message'=>'Unauthorized'],401);
     }
 
     /**
