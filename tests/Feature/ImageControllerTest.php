@@ -21,7 +21,6 @@ class ImageControllerTest extends TestCase
     public function uploadOfferImages()
     {
         // Arrange
-        Storage::fake('images');
         $image1 = 'image1.jpg';
         $image2 = 'image2.jpg';
         $fakeImages = [UploadedFile::fake()->image($image1), UploadedFile::fake()->image($image2)];
@@ -43,7 +42,6 @@ class ImageControllerTest extends TestCase
     public function uploadProfileImage()
     {
         // Arrange
-        Storage::fake('images');
         $image1 = 'image1.jpg';
         $fakeImages = [UploadedFile::fake()->image($image1)];
 
@@ -62,7 +60,6 @@ class ImageControllerTest extends TestCase
     public function deleteOfferImages()
     {
         // Arrange
-        Storage::fake('images');
         $image1 = 'image1.jpg';
         $image2 = 'image2.jpg';
         $fakeImages = [UploadedFile::fake()->image($image1), UploadedFile::fake()->image($image2)];
@@ -93,7 +90,6 @@ class ImageControllerTest extends TestCase
     public function deleteProfileImage()
     {
         // Arrange
-        Storage::fake('images');
         $image1 = 'image1.jpg';
         $fakeImages = [UploadedFile::fake()->image($image1)];
 
