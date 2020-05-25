@@ -19,6 +19,8 @@ Route::post('/login', 'AuthController@login')->name('login');
 Route::get('offers', 'OfferController@index')->name('offers.index');
 Route::get('offers/{offer}', 'OfferController@show')->name('offers.show');
 
+Route::post('images', 'ImageController@fetchImages')->name('images.fetch');
+
 Route::apiResource('offer-requests', 'OfferRequestController');
 
 Route::middleware('auth:api')->group(function () {

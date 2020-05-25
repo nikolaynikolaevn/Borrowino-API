@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\ImageController;
+use App\Offer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -78,7 +79,7 @@ class ImageControllerTest extends TestCase
         // Assert
         $this->assertEquals(0, count($imagesInDatabaseAfterDelete));
 
-        $image1Exists= Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
+        $image1Exists = Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
         $this->assertFalse($image1Exists);
         $image2Exists = Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[1]->path_to_image);
         $this->assertFalse($image2Exists);
@@ -105,7 +106,31 @@ class ImageControllerTest extends TestCase
         // Assert
         $this->assertEquals(0, count($imagesInDatabaseAfterDelete));
 
-        $image1Exists= Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
+        $image1Exists = Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
         $this->assertFalse($image1Exists);
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImage_returnOfferImages()
+    {
+        // Arrange
+        $image1 = 'image1.jpg';
+        $image2 = 'image2.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1), UploadedFile::fake()->image($image2)];
+        factory(Offer::class)->create([
+            'images' => true,
+        ]);
+
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'offer_image');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'offer_image',
+        ]);
+        dd($response);
+        // Assert
     }
 }
