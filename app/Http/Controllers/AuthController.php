@@ -22,6 +22,7 @@ class AuthController extends Controller
 
         $accessToken = $user->createToken('authToken')->accessToken;
 
+        $user->refresh(); // This is to include the default values that are not changed on creation
         return response()->json(['user' => $user, 'access_token' => $accessToken]);
     }
 

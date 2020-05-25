@@ -51,6 +51,7 @@ class OfferController extends Controller
             (new ImageController)->uploadImages($validatedData['images'], $offer->id, 'offer_image');
         }
 
+        $offer->refresh(); // This is to include the default values that are not changed on creation
         return response()->json($offer, 201);
     }
 
