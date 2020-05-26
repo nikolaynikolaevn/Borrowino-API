@@ -97,10 +97,10 @@ class ImageController extends Controller
         $fileNames = null;
 
         if ($resourceType === $this->offerImage) {
-            $offer = Offer::find($resourceId);
+            $offer = Offer::findOrFail($resourceId);
             $fileNames = $offer->images()->pluck('path_to_image');
         } elseif ($resourceType === $this->profileImage) {
-            $user = User::find($resourceId);
+            $user = User::findOrFail($resourceId);
             $fileNames = $user->images()->pluck('path_to_image');
         }
 
