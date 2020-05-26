@@ -30,12 +30,12 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('offers', 'OfferController')->except(['index', 'show']);
 
     Route::middleware('admin')->group(function(){
-        Route::get('/admin/users', 'adminController@showUsers')->name('admin.users');
-        Route::get('/admin/users/{user}', 'adminController@showUser')->name('admin.users.show');
-        Route::delete('admin/users/{user}', 'adminController@deleteUser')->name('offer.users.delete');
-        Route::get('/admin/offers', 'adminController@viewOffers')->name('admin.offers');
-        Route::get('/admin/offers/{offer}', 'adminController@viewOffer')->name('admin.offers.show');
-        Route::delete('admin/offers/{offer}', 'adminController@deleteOffer')->name('offer.offers.delete');
+        Route::get('/admin/users', 'AdminController@showUsers')->name('admin.users');
+        Route::get('/admin/users/{user}', 'AdminController@showUser')->name('admin.users.show');
+        Route::delete('admin/users/{user}', 'AdminController@deleteUser')->name('offer.users.delete');
+        Route::get('/admin/offers', 'AdminController@viewOffers')->name('admin.offers');
+        Route::get('/admin/offers/{offer}', 'AdminController@viewOffer')->name('admin.offers.show');
+        Route::delete('admin/offers/{offer}', 'AdminController@deleteOffer')->name('offer.offers.delete');
     });
 });
 
