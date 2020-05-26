@@ -104,6 +104,10 @@ class ImageController extends Controller
             $fileNames = $user->images()->pluck('path_to_image');
         }
 
+        if (sizeof($fileNames) == 0) {
+            return response()->json(['Message' => 'No images found'], 404);
+        }
+
         $zipFile = new ZipFile();
         foreach ($fileNames as $fileName) {
             $path = Storage::disk('local')->path($fileName);

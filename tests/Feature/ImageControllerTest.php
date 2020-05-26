@@ -255,5 +255,53 @@ class ImageControllerTest extends TestCase
         $response->assertNotFound();
     }
 
+    /**
+     * @test
+     */
+    public function fetchImages_notFoundWhenOfferHasNoImages()
+    {
+        // Arrange
+        /*This is only so PHPUnit does not get a fatal error*/
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'profile_image');
+
+        factory(Offer::class)->create();
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'offer_image',
+        ]);
+
+        // Assert
+        $this->assertNotEquals('application/zip', $response->headers->get('content-type'), 'Zip was returned when it should not have been');
+        $this->assertThat($response->getStatusCode(), $this->equalTo(404));
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImages_notFoundWhenUserHasNoImages()
+    {
+        // Arrange
+        /*This is only so PHPUnit does not get a fatal error*/
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'offer_image');
+
+        factory(User::class)->create();
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $this->assertNotEquals('application/zip', $response->headers->get('content-type'), 'Zip was returned when it should not have been');
+        $this->assertThat($response->getStatusCode(), $this->equalTo(404));
+    }
+
 
 }
