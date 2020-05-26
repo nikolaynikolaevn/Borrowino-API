@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Image;
 use App\Offer;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use PhpZip\Exception\ZipException;
@@ -93,8 +94,11 @@ class ImageController extends Controller
         if ($resourceType === $this->offerImage) {
             $offer = Offer::find($resourceId);
             $fileNames = $offer->images()->pluck('path_to_image');
-
+        } elseif ($resourceType === $this->profileImage) {
+            $user = User::find($resourceId);
+            $fileNames = $user->images()->pluck('path_to_image');
         }
+
         $zipFile = new ZipFile();
         foreach ($fileNames as $fileName) {
             $path = Storage::disk('local')->path($fileName);

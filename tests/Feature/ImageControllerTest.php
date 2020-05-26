@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Controllers\ImageController;
 use App\Offer;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -130,7 +131,30 @@ class ImageControllerTest extends TestCase
             'resource_id' => 1,
             'resource_type' => 'offer_image',
         ]);
-        dd($response);
+
         // Assert
+        $this->assertThat($response->headers->get('content-type'), $this->equalTo('application/zip'), "Image likely not found");
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImage_returnProfileImage()
+    {
+        // Arrange
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'profile_image');
+        factory(User::class)->create();
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $response->assertStatus(200);
+        $this->assertThat($response->headers->get('content-type'), $this->equalTo('application/zip'), "Image likely not found");
     }
 }
