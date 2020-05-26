@@ -202,10 +202,36 @@ class ImageControllerTest extends TestCase
     public function fetchImages_errorWhenResourceTypeIsMissingOrNotAPredefinedString()
     {
         // Arrange
+        /*This is only so PHPUnit does not get a fatal error*/
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'offer_image');
 
         // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+        ]);
 
         // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_type is missing but should not be allowed');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 0,
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_type is an integer but only string should be allowed');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'notAllowed'
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_type is not an allowed string but is accepted');
     }
 
 

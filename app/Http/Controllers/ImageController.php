@@ -89,6 +89,7 @@ class ImageController extends Controller
     {
         $validatedData = $request->validate([
             'resource_id' => 'required|integer|min:1',
+            'resource_type' => ['required', 'string','regex:(' . $this->profileImage . '|' . $this->offerImage.')']
         ]);
 
         $resourceId = $validatedData['resource_id'];
