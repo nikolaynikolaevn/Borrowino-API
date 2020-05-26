@@ -87,7 +87,11 @@ class ImageController extends Controller
 
     public function fetchImages(Request $request)
     {
-        $resourceId = $request->resource_id;
+        $validatedData = $request->validate([
+            'resource_id' => 'required|integer|min:1',
+        ]);
+
+        $resourceId = $validatedData['resource_id'];
         $resourceType = $request->resource_type;
         $fileNames = null;
 
@@ -105,16 +109,23 @@ class ImageController extends Controller
             try {
                 $zipFile->addFile($path);
             } catch (ZipException $e) {
-
+                return response()->json(['Message' => 'Could not get add images to zip file'], 500);
             }
         }
+
         try {
             $fileName = 'zip/' . random_int(1, PHP_INT_MAX) . '.zip';
         } catch (\Exception $e) {
+            return response()->json(['Message' => 'Could not get random number for zip file name'], 500);
         }
+
         $path = Storage::disk('local')->path($fileName);
         $this->fileName = $fileName;
-        $zipFile->saveAsFile($path);
+        try {
+            $zipFile->saveAsFile($path);
+        } catch (ZipException $e) {
+            return response()->json(['Message' => 'Could not save zip file on server'], 500);
+        }
 
         $zipFile->close();
         return response()->download($path)->deleteFileAfterSend();

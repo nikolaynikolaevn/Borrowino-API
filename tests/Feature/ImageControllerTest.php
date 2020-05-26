@@ -157,4 +157,56 @@ class ImageControllerTest extends TestCase
         $response->assertStatus(200);
         $this->assertThat($response->headers->get('content-type'), $this->equalTo('application/zip'), "Image likely not found");
     }
+
+    /**
+     * @test
+     */
+    public function fetchImage_errorWhenResourceIdIsNotANumberMissingOrLessThanZero()
+    {
+        // Arrange
+        /*This is only so PHPUnit does not get a fatal error*/
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'offer_image');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 'String',
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_id was a string but should not be allowed');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_id was missing but should not be allowed');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 0,
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_id was less than 1 but should not be allowed');
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImages_errorWhenResourceTypeIsMissingOrNotAPredefinedString()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+    }
+
+
 }
