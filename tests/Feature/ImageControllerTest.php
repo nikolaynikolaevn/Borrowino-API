@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\ImageController;
+use App\Offer;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
@@ -21,7 +23,6 @@ class ImageControllerTest extends TestCase
     public function uploadOfferImages()
     {
         // Arrange
-        Storage::fake('images');
         $image1 = 'image1.jpg';
         $image2 = 'image2.jpg';
         $fakeImages = [UploadedFile::fake()->image($image1), UploadedFile::fake()->image($image2)];
@@ -43,7 +44,6 @@ class ImageControllerTest extends TestCase
     public function uploadProfileImage()
     {
         // Arrange
-        Storage::fake('images');
         $image1 = 'image1.jpg';
         $fakeImages = [UploadedFile::fake()->image($image1)];
 
@@ -62,7 +62,6 @@ class ImageControllerTest extends TestCase
     public function deleteOfferImages()
     {
         // Arrange
-        Storage::fake('images');
         $image1 = 'image1.jpg';
         $image2 = 'image2.jpg';
         $fakeImages = [UploadedFile::fake()->image($image1), UploadedFile::fake()->image($image2)];
@@ -81,7 +80,7 @@ class ImageControllerTest extends TestCase
         // Assert
         $this->assertEquals(0, count($imagesInDatabaseAfterDelete));
 
-        $image1Exists= Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
+        $image1Exists = Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
         $this->assertFalse($image1Exists);
         $image2Exists = Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[1]->path_to_image);
         $this->assertFalse($image2Exists);
@@ -93,7 +92,6 @@ class ImageControllerTest extends TestCase
     public function deleteProfileImage()
     {
         // Arrange
-        Storage::fake('images');
         $image1 = 'image1.jpg';
         $fakeImages = [UploadedFile::fake()->image($image1)];
 
@@ -109,7 +107,201 @@ class ImageControllerTest extends TestCase
         // Assert
         $this->assertEquals(0, count($imagesInDatabaseAfterDelete));
 
-        $image1Exists= Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
+        $image1Exists = Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
         $this->assertFalse($image1Exists);
     }
+
+    /**
+     * @test
+     */
+    public function fetchImage_returnOfferImages()
+    {
+        // Arrange
+        $image1 = 'image1.jpg';
+        $image2 = 'image2.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1), UploadedFile::fake()->image($image2)];
+        factory(Offer::class)->create([
+            'images' => true,
+        ]);
+
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'offer_image');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'offer_image',
+        ]);
+
+        // Assert
+        $this->assertThat($response->headers->get('content-type'), $this->equalTo('application/zip'), "Image likely not found");
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImage_returnProfileImage()
+    {
+        // Arrange
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'profile_image');
+        factory(User::class)->create();
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $response->assertStatus(200);
+        $this->assertThat($response->headers->get('content-type'), $this->equalTo('application/zip'), "Image likely not found");
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImage_errorWhenResourceIdIsNotANumberMissingOrLessThanZero()
+    {
+        // Arrange
+        /*This is only so PHPUnit does not get a fatal error*/
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'offer_image');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 'String',
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_id was a string but should not be allowed');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_id was missing but should not be allowed');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 0,
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_id was less than 1 but should not be allowed');
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImages_errorWhenResourceTypeIsMissingOrNotAPredefinedString()
+    {
+        // Arrange
+        /*This is only so PHPUnit does not get a fatal error*/
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'offer_image');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_type is missing but should not be allowed');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 0,
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_type is an integer but only string should be allowed');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'notAllowed'
+        ]);
+
+        // Assert
+        $this->assertThat($response->getStatusCode(), $this->equalTo(422), 'resource_type is not an allowed string but is accepted');
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImages_notFoundStatusWhenResourceNotFound()
+    {
+        // Arrange
+        /*This is only so PHPUnit does not get a fatal error*/
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'offer_image');
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'offer_image',
+        ]);
+
+        // Assert
+        $response->assertNotFound();
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImages_notFoundWhenOfferHasNoImages()
+    {
+        // Arrange
+        /*This is only so PHPUnit does not get a fatal error*/
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'profile_image');
+
+        factory(Offer::class)->create();
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'offer_image',
+        ]);
+
+        // Assert
+        $this->assertNotEquals('application/zip', $response->headers->get('content-type'), 'Zip was returned when it should not have been');
+        $this->assertThat($response->getStatusCode(), $this->equalTo(404));
+    }
+
+    /**
+     * @test
+     */
+    public function fetchImages_notFoundWhenUserHasNoImages()
+    {
+        // Arrange
+        /*This is only so PHPUnit does not get a fatal error*/
+        $image1 = 'image1.jpg';
+        $fakeImages = [UploadedFile::fake()->image($image1)];
+        (new \App\Http\Controllers\ImageController)->uploadImages($fakeImages, 1, 'offer_image');
+
+        factory(User::class)->create();
+
+        // Act
+        $response = $this->postJson(route('images.fetch'), [
+            'resource_id' => 1,
+            'resource_type' => 'profile_image',
+        ]);
+
+        // Assert
+        $this->assertNotEquals('application/zip', $response->headers->get('content-type'), 'Zip was returned when it should not have been');
+        $this->assertThat($response->getStatusCode(), $this->equalTo(404));
+    }
+
+
 }

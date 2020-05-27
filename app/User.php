@@ -42,4 +42,9 @@ class User extends Authenticatable
 //    {
 //        return $this->isAdmin;
 //    }
+
+    public function images()
+    {
+        return Image::where('type', 'profile_image')->where('resource_id', $this->id)->get();
+    }
 }

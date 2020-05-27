@@ -3,13 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Image;
+use App\Offer;
+use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use PhpZip\Exception\ZipException;
+use PhpZip\ZipFile;
 
 class ImageController extends Controller
 {
     private $offerImage;
     private $profileImage;
     private $acceptedTypes;
+
+    private $fileName;
 
     public function __construct()
     {
@@ -76,5 +83,65 @@ class ImageController extends Controller
         }
         $imagesInDatabase = $imagesInDatabase->pluck('id');
         Image::destroy($imagesInDatabase);
+    }
+
+    public function fetchImages(Request $request)
+    {
+        $validatedData = $request->validate([
+            'resource_id' => 'required|integer|min:1',
+            'resource_type' => ['required', 'string','regex:(' . $this->profileImage . '|' . $this->offerImage.')']
+        ]);
+
+        $resourceId = $validatedData['resource_id'];
+        $resourceType = $request->resource_type;
+        $fileNames = null;
+
+        if ($resourceType === $this->offerImage) {
+            $offer = Offer::findOrFail($resourceId);
+            $fileNames = $offer->images()->pluck('path_to_image');
+        } elseif ($resourceType === $this->profileImage) {
+            $user = User::findOrFail($resourceId);
+            $fileNames = $user->images()->pluck('path_to_image');
+        }
+
+        if (sizeof($fileNames) == 0) {
+            return response()->json(['Message' => 'No images found'], 404);
+        }
+
+        $zipFile = new ZipFile();
+        foreach ($fileNames as $fileName) {
+            $path = Storage::disk('local')->path($fileName);
+            try {
+                $zipFile->addFile($path);
+            } catch (ZipException $e) {
+                return response()->json(['Message' => 'Could not get add images to zip file'], 500);
+            }
+        }
+
+        try {
+            $fileName = 'zip/' . random_int(1, PHP_INT_MAX) . '.zip';
+        } catch (\Exception $e) {
+            return response()->json(['Message' => 'Could not get random number for zip file name'], 500);
+        }
+
+        $path = Storage::disk('local')->path($fileName);
+        $this->fileName = $fileName;
+        try {
+            $zipFile->saveAsFile($path);
+        } catch (ZipException $e) {
+            return response()->json(['Message' => 'Could not save zip file on server'], 500);
+        }
+
+        $zipFile->close();
+        return response()->download($path)->deleteFileAfterSend();
+    }
+
+
+    /**
+     * Delete zip after sending
+     */
+    public function __destruct()
+    {
+        Storage::disk('local')->delete($this->fileName);
     }
 }
