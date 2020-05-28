@@ -7,6 +7,7 @@ use App\Offer;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use PhpZip\Exception\ZipException;
 use PhpZip\ZipFile;
 
@@ -50,6 +51,7 @@ class ImageController extends Controller
         foreach ($images as $image) {
             $name = microtime() . '.' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
             $path = 'images/';
+//            dd($name);
 
             $imageDatabaseReference = new Image();
             $imageDatabaseReference->resource_id = $resourceId;
@@ -57,7 +59,8 @@ class ImageController extends Controller
             $imageDatabaseReference->type = $resourceType;
             $imageDatabaseReference->save();
 
-            $image->storeAs($path, $name);
+            $image->move(public_path('images'), $name);
+//            Storage::disk('public')->put($path . $name, $image);
         }
     }
 
@@ -77,19 +80,23 @@ class ImageController extends Controller
             ->where('resource_id', $resourceId)
             ->get();
 
-
         foreach ($imagesInDatabase as $image) {
-            Storage::disk('local')->delete($image['path_to_image']);
+            File::delete(public_path() .'/'. $image['path_to_image']);
         }
+
         $imagesInDatabase = $imagesInDatabase->pluck('id');
         Image::destroy($imagesInDatabase);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function fetchImages(Request $request)
     {
         $validatedData = $request->validate([
             'resource_id' => 'required|integer|min:1',
-            'resource_type' => ['required', 'string','regex:(' . $this->profileImage . '|' . $this->offerImage.')']
+            'resource_type' => ['required', 'string', 'regex:(' . $this->profileImage . '|' . $this->offerImage . ')']
         ]);
 
         $resourceId = $validatedData['resource_id'];
@@ -108,40 +115,15 @@ class ImageController extends Controller
             return response()->json(['Message' => 'No images found'], 404);
         }
 
-        $zipFile = new ZipFile();
-        foreach ($fileNames as $fileName) {
-            $path = Storage::disk('local')->path($fileName);
-            try {
-                $zipFile->addFile($path);
-            } catch (ZipException $e) {
-                return response()->json(['Message' => 'Could not get add images to zip file'], 500);
-            }
-        }
-
-        try {
-            $fileName = 'zip/' . random_int(1, PHP_INT_MAX) . '.zip';
-        } catch (\Exception $e) {
-            return response()->json(['Message' => 'Could not get random number for zip file name'], 500);
-        }
-
-        $path = Storage::disk('local')->path($fileName);
-        $this->fileName = $fileName;
-        try {
-            $zipFile->saveAsFile($path);
-        } catch (ZipException $e) {
-            return response()->json(['Message' => 'Could not save zip file on server'], 500);
-        }
-
-        $zipFile->close();
-        return response()->download($path)->deleteFileAfterSend();
+        return response()->json(['images' => $fileNames], 200);
     }
 
 
-    /**
-     * Delete zip after sending
-     */
-    public function __destruct()
-    {
-        Storage::disk('local')->delete($this->fileName);
-    }
+//    /**
+//     * Delete zip after sending
+//     */
+//    public function __destruct()
+//    {
+//        Storage::disk('local')->delete($this->fileName);
+//    }
 }

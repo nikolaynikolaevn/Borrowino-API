@@ -15,7 +15,14 @@ use Tests\TestCase;
 
 class ImageControllerTest extends TestCase
 {
+    public function tearDown(): void
+    {
+        array_map('unlink', array_filter((array)glob(public_path('images') . '/*')));
+        parent::tearDown();
+    }
+
     use RefreshDatabase, WithoutMiddleware;
+
 
     /**
      * @test
@@ -34,8 +41,8 @@ class ImageControllerTest extends TestCase
             ->get();
 
         // Assert
-        Storage::disk('local')->assertExists($imagesInDatabase[0]->path_to_image);
-        Storage::disk('local')->assertExists($imagesInDatabase[1]->path_to_image);
+        $this->assertFileExists(public_path($imagesInDatabase[0]->path_to_image));
+        $this->assertFileExists(public_path($imagesInDatabase[1]->path_to_image));
     }
 
     /**
@@ -53,7 +60,7 @@ class ImageControllerTest extends TestCase
             ->get();
 
         // Assert
-        Storage::disk('local')->assertExists($imagesInDatabase[0]->path_to_image);
+        $this->assertFileExists(public_path($imagesInDatabase[0]->path_to_image));
     }
 
     /**
@@ -80,9 +87,9 @@ class ImageControllerTest extends TestCase
         // Assert
         $this->assertEquals(0, count($imagesInDatabaseAfterDelete));
 
-        $image1Exists = Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
+        $image1Exists = Storage::exists(public_path($imagesInDatabaseBeforeDelete[0]->path_to_image));
         $this->assertFalse($image1Exists);
-        $image2Exists = Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[1]->path_to_image);
+        $image2Exists = Storage::exists(public_path($imagesInDatabaseBeforeDelete[1]->path_to_image));
         $this->assertFalse($image2Exists);
     }
 
@@ -107,7 +114,7 @@ class ImageControllerTest extends TestCase
         // Assert
         $this->assertEquals(0, count($imagesInDatabaseAfterDelete));
 
-        $image1Exists = Storage::disk('local')->exists($imagesInDatabaseBeforeDelete[0]->path_to_image);
+        $image1Exists = Storage::exists(public_path($imagesInDatabaseBeforeDelete[0]->path_to_image));
         $this->assertFalse($image1Exists);
     }
 
@@ -133,7 +140,9 @@ class ImageControllerTest extends TestCase
         ]);
 
         // Assert
-        $this->assertThat($response->headers->get('content-type'), $this->equalTo('application/zip'), "Image likely not found");
+
+        $this->assertStringContainsString($image1, $response['images'][0], $image1 . ' was not found in response array');
+        $this->assertStringContainsString($image2, $response['images'][1], $image2 . ' was not found in response array');
     }
 
     /**
@@ -154,8 +163,7 @@ class ImageControllerTest extends TestCase
         ]);
 
         // Assert
-        $response->assertStatus(200);
-        $this->assertThat($response->headers->get('content-type'), $this->equalTo('application/zip'), "Image likely not found");
+        $this->assertStringContainsString($image1, $response['images'][0], $image1 . ' was not found in response array');
     }
 
     /**
