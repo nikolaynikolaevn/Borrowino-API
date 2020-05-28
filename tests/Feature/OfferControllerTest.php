@@ -161,8 +161,8 @@ class OfferControllerTest extends TestCase
 
         $this->assertEquals(2, count($imagesInDatabase));
 
-        Storage::disk('local')->assertExists($imagesInDatabase[0]->path_to_image);
-        Storage::disk('local')->assertExists($imagesInDatabase[1]->path_to_image);
+        $this->assertFileExists(public_path($imagesInDatabase[0]->path_to_image));
+        $this->assertFileExists(public_path($imagesInDatabase[1]->path_to_image));
 
         return $response;
     }
@@ -232,10 +232,8 @@ class OfferControllerTest extends TestCase
         // Assert
         $this->assertEquals(0, count($imagesInDatabaseAfterDelete));
 
-        $image1Exists = Storage::disk('local')->exists($imagesToBeDeleted[0]->path_to_image);
-        $this->assertFalse($image1Exists, "Image not deleted from disk");
-        $image2Exists = Storage::disk('local')->exists($imagesToBeDeleted[1]->path_to_image);
-        $this->assertFalse($image2Exists, "Image not deleted from disk");
+        $this->assertFileNotExists(public_path($imagesToBeDeleted[0]->path_to_image));
+        $this->assertFileNotExists(public_path($imagesToBeDeleted[1]->path_to_image));
     }
 
 
@@ -323,14 +321,20 @@ class OfferControllerTest extends TestCase
 
 
         // Assert
-        $image1Exists = Storage::disk('local')->exists($imagesToBeDeleted[0]->path_to_image);
-        $this->assertFalse($image1Exists, "Image not deleted from disk");
-        $image2Exists = Storage::disk('local')->exists($imagesToBeDeleted[1]->path_to_image);
-        $this->assertFalse($image2Exists, "Image not deleted from disk");
-        $image3Exists = Storage::disk('local')->exists($offerImages[0]->path_to_image);
-        $this->assertFalse($image2Exists, "Image not saved to disk");
-        $image4Exists = Storage::disk('local')->exists($offerImages[1]->path_to_image);
-        $this->assertFalse($image2Exists, "Image not saved to disk");
+        $this->assertFileNotExists(public_path($imagesToBeDeleted[0]->path_to_image), 'Image not deleted from disk');
+        $this->assertFileNotExists(public_path($imagesToBeDeleted[1]->path_to_image), 'Image not deleted from disk');
+
+        $this->assertFileExists(public_path($offerImages[0]->path_to_image), 'Image not saved to disk');
+        $this->assertFileExists(public_path($offerImages[1]->path_to_image), 'Image not saved to disk');
+
+//        $image1Exists = Storage::disk('local')->exists($imagesToBeDeleted[0]->path_to_image);
+//        $this->assertFalse($image1Exists, "Image not deleted from disk");
+//        $image2Exists = Storage::disk('local')->exists($imagesToBeDeleted[1]->path_to_image);
+//        $this->assertFalse($image2Exists, "Image not deleted from disk");
+//        $image3Exists = Storage::disk('local')->exists($offerImages[0]->path_to_image);
+//        $this->assertFalse($image2Exists, "Image not saved to disk");
+//        $image4Exists = Storage::disk('local')->exists($offerImages[1]->path_to_image);
+//        $this->assertFalse($image2Exists, "Image not saved to disk");
     }
 
 
