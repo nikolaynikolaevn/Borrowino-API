@@ -68,7 +68,7 @@ class WorkaroundUserController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function image(User $user)
+    public function images(User $user)
     {
         $fileNames = (new ImageController)->fetchImages($user->id, 'profile_image');
         if ($fileNames == null) {

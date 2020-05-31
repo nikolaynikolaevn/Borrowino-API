@@ -27,7 +27,7 @@ class WorkaroundUserControllerTest extends TestCase
         ]);
 
         // Act
-        $response = $this->getJson(route('users.image', compact('user')));
+        $response = $this->getJson(route('users.images', compact('user')));
 
         // Assert
         $response->assertOk();
@@ -43,7 +43,7 @@ class WorkaroundUserControllerTest extends TestCase
         factory(User::class);
 
         // Act
-        $response = $this->getJson(route('users.image', 1));
+        $response = $this->getJson(route('users.images', 1));
 
         // Assert
         $response->assertNotFound();

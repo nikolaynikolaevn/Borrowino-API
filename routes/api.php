@@ -20,7 +20,7 @@ Route::get('offers', 'OfferController@index')->name('offers.index');
 Route::get('offers/{offer}', 'OfferController@show')->name('offers.show');
 
 Route::get('/offers/{offer}/images', 'OfferController@images')->name('offers.images');
-Route::get('/users/{user}/image', 'WorkaroundUserController@image')->name('users.image');
+Route::get('/users/{user}/images', 'WorkaroundUserController@images')->name('users.images');
 
 Route::apiResource('offer-requests', 'OfferRequestController');
 
