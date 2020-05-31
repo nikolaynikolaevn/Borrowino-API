@@ -19,7 +19,7 @@ class RouterTest extends TestCase
         factory(Offer::class, 2)->create();
 
         // Act
-        $request = $this->getJson(route('offer.index'));
+        $request = $this->getJson(route('offers.index'));
 
         //Assert
         $request->assertStatus(200);
@@ -34,7 +34,7 @@ class RouterTest extends TestCase
         factory(Offer::class)->create();
 
         // Act
-        $request = $this->getJson(route('offer.index',1));
+        $request = $this->getJson(route('offers.index',1));
 
         // Assert
         $request->assertStatus(200);

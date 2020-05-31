@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Auth;
 
-class adminController extends Controller
+class AdminController extends Controller
 {
 
     public function showUser(User $user)

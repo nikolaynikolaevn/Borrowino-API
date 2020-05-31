@@ -61,9 +61,9 @@ class OfferController extends Controller
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Offer $offer)
     {
-        $offer = Offer::findOrFail($id);
+//        $offer = Offer::findOrFail($id);
         return response()->json($offer, 200);
     }
 
@@ -74,9 +74,9 @@ class OfferController extends Controller
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Offer $offer)
     {
-        $offer = Offer::findOrFail($id);
+//        $offer = Offer::findOrFail($id);
 
         if (Auth::user()->id != $offer->owner) {
             return response()->json(['Message' => 'Unauthorized'], 401);
@@ -109,9 +109,9 @@ class OfferController extends Controller
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Offer $offer)
     {
-        $offer = Offer::findOrFail($id);
+//        $offer = Offer::findOrFail($id);
 
         if (Auth::user()->id != $offer->owner) {
             return response()->json(['Message' => 'Unauthorized'], 401);
@@ -121,5 +121,18 @@ class OfferController extends Controller
 
         $offer->delete();
         return response()->json(null, 204);
+    }
+
+    /**
+     * @param \App\Offer $offer
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function images(Offer $offer)
+    {
+        $fileNames = (new ImageController)->fetchImages($offer->id, 'offer_image');
+        if ($fileNames == null) {
+            return response()->json(['Message' => 'No images found'], 404);
+        }
+        return response()->json(['images' => $fileNames], 200);
     }
 }
