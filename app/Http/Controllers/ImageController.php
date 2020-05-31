@@ -88,34 +88,23 @@ class ImageController extends Controller
         Image::destroy($imagesInDatabase);
     }
 
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function fetchImages(Request $request)
+    public function fetchImages(int $resourceId, string $resourceType)
     {
-        $validatedData = $request->validate([
-            'resource_id' => 'required|integer|min:1',
-            'resource_type' => ['required', 'string', 'regex:(' . $this->profileImage . '|' . $this->offerImage . ')']
-        ]);
-
-        $resourceId = $validatedData['resource_id'];
-        $resourceType = $request->resource_type;
         $fileNames = null;
 
         if ($resourceType === $this->offerImage) {
-            $offer = Offer::findOrFail($resourceId);
+            $offer = Offer::find($resourceId);
             $fileNames = $offer->images()->pluck('path_to_image');
         } elseif ($resourceType === $this->profileImage) {
-            $user = User::findOrFail($resourceId);
+            $user = User::find($resourceId);
             $fileNames = $user->images()->pluck('path_to_image');
         }
 
         if (sizeof($fileNames) == 0) {
-            return response()->json(['Message' => 'No images found'], 404);
+            return null;
         }
 
-        return response()->json(['images' => $fileNames], 200);
+        return $fileNames;
     }
 
 

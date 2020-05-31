@@ -19,7 +19,8 @@ Route::post('/login', 'AuthController@login')->name('login');
 Route::get('offers', 'OfferController@index')->name('offers.index');
 Route::get('offers/{offer}', 'OfferController@show')->name('offers.show');
 
-Route::post('/image', 'ImageController@fetchImages')->name('images.fetch');
+Route::get('/offers/{offer}/images', 'OfferController@images')->name('offers.images');
+Route::get('/users/{user}/image', 'WorkaroundUserController@image')->name('users.image');
 
 Route::apiResource('offer-requests', 'OfferRequestController');
 
