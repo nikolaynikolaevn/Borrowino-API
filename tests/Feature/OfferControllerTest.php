@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Http\Controllers;
+namespace Tests\Feature;
 
 use App\Offer;
 use App\User;
@@ -13,18 +13,22 @@ use Tests\TestCase;
 
 class OfferControllerTest extends TestCase
 {
+    private $user;
+
     protected function setUp(): void
     {
         parent::setUp();
+        $this->user = factory(User::class)->create();
 
         // Get all files in a directory
         $files = Storage::disk('local')->allFiles('images');
 
         // Delete Files
         Storage::delete($files);
+
     }
 
-    use RefreshDatabase, WithoutMiddleware;
+    use RefreshDatabase;
 
 
     /**
@@ -38,7 +42,7 @@ class OfferControllerTest extends TestCase
         // Act
 
         // Assert
-        $this->getJson(route('offers.index'))
+        $this->actingAs($this->user, 'api')->getJson(route('offers.index'))
             ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => ['*' => ['id', 'created_at', 'updated_at', 'title', 'description', 'location', 'price', 'owner']]
@@ -57,7 +61,7 @@ class OfferControllerTest extends TestCase
 
         // Act
         //        $response = $this->get('/api/offers' . '?' . $queryParameters); // this is a custom function. you can use $this->get(...)
-        $response = $this->get(route('offers.index') . '?' . $queryParameters); // this is a custom function. you can use $this->get(...)
+        $response = $this->actingAs($this->user, 'api')->get(route('offers.index') . '?' . $queryParameters); // this is a custom function. you can use $this->get(...)
 
         // Assert
         $this->assertEquals('200', $response->getStatusCode());
@@ -80,7 +84,7 @@ class OfferControllerTest extends TestCase
         $offerExpected = factory(Offer::class)->create();
 
         // Act
-        $response = $this->getJson(route('offers.show', 1));
+        $response = $this->actingAs($this->user, 'api')->getJson(route('offers.show', $offerExpected->id));
 
         // Assert
         $response->assertStatus(200)
@@ -99,10 +103,10 @@ class OfferControllerTest extends TestCase
         $LOCATION = 'location';
         $PRICE = 30;
 
-        $user = factory(User::class)->create();
+        //        $user = factory(User::class)->create();
 
         // Act
-        $response = $this->actingAs($user)->postJson(route('offers.store'), [
+        $response = $this->actingAs($this->user, 'api')->postJson(route('offers.store'), [
             'title' => $TITLE,
             'description' => $DESCRIPTION,
             'location' => $LOCATION,
@@ -131,12 +135,12 @@ class OfferControllerTest extends TestCase
 
         Storage::fake('images');
 
-        $user = factory(User::class)->create();
+        //        $user = factory(User::class)->create();
         $image1 = 'image1.jpg';
         $image2 = 'image2.jpg';
 
         // Act
-        $response = $this->actingAs($user)->postJson(route('offers.store'), [
+        $response = $this->actingAs($this->user, 'api')->postJson(route('offers.store'), [
             'title' => $TITLE,
             'description' => $DESCRIPTION,
             'location' => $LOCATION,
@@ -178,13 +182,14 @@ class OfferControllerTest extends TestCase
             // This is normal behavior
             'created_at' => null,
             'updated_at' => null,
+            'owner' => $this->user->id,
         ]);
-        $user = User::find(1);
+        //        $user = User::find(1);
 
 
         // Act
         $this->assertDatabaseHas('offers', $offer->toArray());
-        $response = $this->actingAs($user)->deleteJson(route('offers.destroy', 1));
+        $response = $this->actingAs($this->user, 'api')->deleteJson(route('offers.destroy', $offer->id));
 
 
         // Assert
@@ -204,10 +209,10 @@ class OfferControllerTest extends TestCase
             'created_at' => null,
             'updated_at' => null,
         ]); // A user is already created in this factory
-        $user = factory(User::class)->create();
+        //        $user = factory(User::class)->create();
 
         // Act
-        $response = $this->actingAs($user)->deleteJson(route('offers.destroy', 1));
+        $response = $this->actingAs($this->user, 'api')->deleteJson(route('offers.destroy', $offer->id));
 
         // Assert
         $this->assertDatabaseHas('offers', $offer->toArray());
@@ -223,10 +228,10 @@ class OfferControllerTest extends TestCase
         $response = $this->store_offerIsStoredWithImages();
         $offer = Offer::find($response['id']);
         $imagesToBeDeleted = $offer->images();
-        $user = User::find(1);
+        //        $user = User::find(1);
 
         // Act
-        $response = $this->actingAs($user)->deleteJson(route('offers.destroy', 1));
+        $response = $this->actingAs($this->user, 'api')->deleteJson(route('offers.destroy', $offer->id));
         $imagesInDatabaseAfterDelete = DB::table('images')->get();
 
         // Assert
@@ -248,11 +253,11 @@ class OfferControllerTest extends TestCase
             // This is normal behavior
             'created_at' => null,
             'updated_at' => null,
+            'owner' => $this->user->id,
         ]);
-        $user = User::find(1);
+        //        $user = User::find(1);
 
         $updatedOffer = new Offer();
-        $updatedOffer->id = 1;
         $updatedOffer->title = "title";
         $updatedOffer->description = "description";
         $updatedOffer->location = "location";
@@ -260,7 +265,7 @@ class OfferControllerTest extends TestCase
 
         // Act
         $this->assertDatabaseHas('offers', $offer->toArray());
-        $response = $this->actingAs($user)->patchJson(route('offers.update', 1), $updatedOffer->toArray());
+        $response = $this->actingAs($this->user, 'api')->patchJson(route('offers.update', $offer->id), $updatedOffer->toArray());
 
         // Assert
         $response->assertOk();
@@ -279,11 +284,11 @@ class OfferControllerTest extends TestCase
             'created_at' => null,
             'updated_at' => null,
         ]);
-        $user = factory(User::class)->create();
+        //        $user = factory(User::class)->create();
 
         // Act
         $this->assertDatabaseHas('offers', $offer->toArray());
-        $response = $this->actingAs($user)->patchJson(route('offers.update', 1), $offer->toArray());
+        $response = $this->actingAs($this->user, 'api')->patchJson(route('offers.update', $offer->id), $offer->toArray());
 
         // Assert
         $response->assertUnauthorized();
@@ -299,7 +304,7 @@ class OfferControllerTest extends TestCase
         $response = $this->store_offerIsStoredWithImages();
         $offer = Offer::find($response['id']);
         $imagesToBeDeleted = $offer->images();
-        $user = User::find(1);
+//        $user = User::find(1);
 
         Storage::fake('images');
         $image3 = 'image3.jpg';
@@ -315,7 +320,7 @@ class OfferControllerTest extends TestCase
         $updatedOffer->images = $newImages;
 
         // Act
-        $response = $this->actingAs($user)->patchJson(route('offers.update', 1), $updatedOffer->toArray());
+        $response = $this->actingAs($this->user, 'api')->patchJson(route('offers.update', $offer->id), $updatedOffer->toArray());
         $offer = Offer::find($response['id']);
         $offerImages = $offer->images();
 
@@ -326,15 +331,41 @@ class OfferControllerTest extends TestCase
 
         $this->assertFileExists(public_path($offerImages[0]->path_to_image), 'Image not saved to disk');
         $this->assertFileExists(public_path($offerImages[1]->path_to_image), 'Image not saved to disk');
+    }
 
-//        $image1Exists = Storage::disk('local')->exists($imagesToBeDeleted[0]->path_to_image);
-//        $this->assertFalse($image1Exists, "Image not deleted from disk");
-//        $image2Exists = Storage::disk('local')->exists($imagesToBeDeleted[1]->path_to_image);
-//        $this->assertFalse($image2Exists, "Image not deleted from disk");
-//        $image3Exists = Storage::disk('local')->exists($offerImages[0]->path_to_image);
-//        $this->assertFalse($image2Exists, "Image not saved to disk");
-//        $image4Exists = Storage::disk('local')->exists($offerImages[1]->path_to_image);
-//        $this->assertFalse($image2Exists, "Image not saved to disk");
+    /**
+     * @test
+     */
+    public function images_fetchUrlsWhenOfferHasImages()
+    {
+        // Arrange
+        $image1 = 'image1.jpg';
+        $image2 = 'image2.jpg';
+        $response = $this->store_offerIsStoredWithImages();
+        $offer = $response['id'];
+
+        // Act
+        $response = $this->actingAs($this->user, 'api')->getJson(route('offers.images', compact('offer')));
+
+        // Assert
+        $response->assertOk();
+        $this->assertStringContainsString($image1, $response['images'][0], $image1 . ' was not found in response array');
+        $this->assertStringContainsString($image2, $response['images'][1], $image2 . ' was not found in response array');
+    }
+
+    /**
+     * @test
+     */
+    public function images_return404whenNoImagesFound()
+    {
+        // Arrange
+        factory(Offer::class);
+
+        // Act
+        $response = $this->getJson(route('offers.images', 1));
+
+        // Assert
+        $response->assertNotFound();
     }
 
 
