@@ -21,7 +21,7 @@ Route::get('offers/{offer}', 'OfferController@show')->name('offers.show');
 
 Route::apiResource('offer-requests', 'OfferRequestController');
 
-Route::get('/users/{user}', 'UserController@show')->name('users.show');
+Route::apiResource('users', 'UserController');
 
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', 'AuthController@logout')->name('logout');

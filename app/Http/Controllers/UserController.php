@@ -71,7 +71,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if (Auth::user()->is_admin) {
+        if (Auth::user()->id === $user->id) {
             $user->delete();
             return response()->json(null, 204);
         }
