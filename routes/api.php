@@ -24,6 +24,8 @@ Route::get('/users/{user}/images', 'WorkaroundUserController@images')->name('use
 
 Route::apiResource('offer-requests', 'OfferRequestController');
 
+Route::apiResource('users', 'UserController');
+
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', 'AuthController@logout')->name('logout');
     Route::get('/user', function (Request $request) {
