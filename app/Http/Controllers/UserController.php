@@ -51,9 +51,9 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validatedData = $request->validate([
-            'name' => 'max:55',
-            'email' => 'email|unique:users',
-            'password' => 'confirmed', // This means that there needs to be a field called password_confirmation
+            'name' => 'required|max:55',
+            'email' => 'email|required|unique:users',
+            'password' => 'required|confirmed', // This means that there needs to be a field called password_confirmation
         ]);
 
         if (Auth::user()->id === $user->id) {
