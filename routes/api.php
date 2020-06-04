@@ -32,6 +32,8 @@ Route::middleware('auth:api')->group(function () {
 
     Route::apiResource('offers', 'OfferController')->except(['index', 'show']);
 
+    Route::post('/report/offer', 'OfferReportController@store')->name('offer-reports.store');
+
     Route::middleware('admin')->group(function(){
         Route::get('/admin/users', 'AdminController@showUsers')->name('admin.users');
         Route::get('/admin/users/{user}', 'AdminController@showUser')->name('admin.users.show');
