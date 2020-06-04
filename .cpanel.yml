@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/biteokb/api.borrowino.ga/
+    - export DEPLOYPATH=/home/borro/api.borrowino.ga/
     - /bin/cp * $DEPLOYPATH
