@@ -33,7 +33,7 @@ class OfferController extends Controller
             'description' => 'required',
             'location' => 'required',
             'price' => 'required|numeric|min:0',
-            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
+            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg,bmp,webp|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
         ]);
 
         $offer = new Offer();
