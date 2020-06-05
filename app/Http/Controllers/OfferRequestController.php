@@ -71,6 +71,7 @@ class OfferRequestController extends Controller
             'from' => 'required|date|before_or_equal:until',
             'until' => 'required|date|after_or_equal:from',
             'description' => 'max:1000',
+            'status' => 'required|in:accepted,declined',
         ]);
 
         $offer = Offer::findOrFail($offerRequest->offer);

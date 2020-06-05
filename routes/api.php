@@ -20,7 +20,12 @@ Route::get('offers', 'OfferController@index')->name('offers.index');
 Route::get('offers/{offer}', 'OfferController@show')->name('offers.show');
 
 Route::get('/offers/{offer}/images', 'OfferController@images')->name('offers.images');
+
+Route::apiResource('users', 'UserController');
+Route::get('/users/{user}/offers', 'UserController@getUserOffers')->name('users.offers');
 Route::get('/users/{user}/images', 'WorkaroundUserController@images')->name('users.images');
+
+Route::get('/search', 'SearchController@searchOffer')->name('search');
 
 Route::apiResource('offer-requests', 'OfferRequestController');
 
@@ -34,6 +39,12 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/offers/{offer}/report', 'OfferReportController@store')->name('offer-reports.store');
 
+    Route::bind('offer', function ($id) {
+        return \App\Offer::where('id', $id)
+            ->where('active', 1)
+            ->firstOrFail();
+    });
+
     Route::middleware('admin')->prefix('admin')->group(function () {
         Route::get('offer-reports', 'OfferReportController@index')->name('offer-reports.index');
         Route::get('offer-reports/{offer_report}', 'OfferReportController@show')->name('offer-reports.show');
@@ -45,6 +56,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('offers', 'AdminController@viewOffers')->name('admin.offers');
         Route::get('offers/{offer}', 'AdminController@viewOffer')->name('admin.offers.show');
         Route::delete('offers/{offer}', 'AdminController@deleteOffer')->name('offer.offers.delete');
+
     });
 });
 
