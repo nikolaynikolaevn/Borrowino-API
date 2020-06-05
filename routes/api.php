@@ -53,7 +53,8 @@ Route::middleware('auth:api')->group(function () {
     });
 });
 
-Route::get('/login/facebook', 'SocialAuthFacebookController@redirect');
-Route::get('/login/facebook/callback', 'SocialAuthFacebookController@callback');
-
+Route::group(['middleware' => ['web']], function () {
+    Route::get('/login/facebook', 'SocialAuthFacebookController@redirectToProvider');
+    Route::get('/login/facebook/callback', 'SocialAuthFacebookController@handleProviderCallback');
+});
 

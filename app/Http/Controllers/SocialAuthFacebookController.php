@@ -2,28 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Services\FacebookAccountService;
 use Socialite;
 
 class SocialAuthFacebookController extends Controller
 {
     /**
-     * Create a redirect method to facebook api.
+     * Redirect the user to the GitHub authentication page.
      *
-     * @return void
+     * @return \Illuminate\Http\Response
      */
-    public function redirect()
+    public function redirectToProvider()
     {
         return Socialite::driver('facebook')->redirect();
     }
 
     /**
-     * Return a callback method from facebook api.
+     * Obtain the user information from GitHub.
      *
-     * @return callback URL from facebook
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function callback()
+    public function handleProviderCallback(FacebookAccountService $service)
     {
+//        auth()->login($user);
 
+//        $token = $user->token;
+//        $refreshToken = $user->refreshToken; // not always provided
+//        $expiresIn = $user->expiresIn;
+
+        return $service->createOrGetUser(Socialite::driver('facebook')->stateless()->user());
     }
 }
