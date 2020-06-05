@@ -2,9 +2,7 @@
 
 namespace App;
 
-use App\Image;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Offer extends Model
 {
@@ -14,7 +12,7 @@ class Offer extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'description', 'location', 'photos', 'price'
+        'title', 'description', 'location', 'photos', 'price', 'expires'
     ];
 
     public function owner()

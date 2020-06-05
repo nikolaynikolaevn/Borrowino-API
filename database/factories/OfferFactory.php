@@ -12,6 +12,7 @@ $factory->define(Offer::class, function (Faker $faker) {
         'description' => $faker->realText(200),
         'location' => $faker->city,
         'price' => $faker->randomFloat(2, 1, 1000),
+        'expires' => $faker->dateTimeBetween('now', '+10 days'),
         'owner'=> function() {
             return factory(User::class)->create()->id;
         },
