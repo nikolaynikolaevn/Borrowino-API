@@ -22,6 +22,8 @@ Route::get('offers/{offer}', 'OfferController@show')->name('offers.show');
 Route::get('/offers/{offer}/images', 'OfferController@images')->name('offers.images');
 Route::get('/users/{user}/images', 'WorkaroundUserController@images')->name('users.images');
 
+Route::get('/search', 'SearchController@searchOffer')->name('search');
+
 Route::apiResource('offer-requests', 'OfferRequestController');
 
 Route::apiResource('users', 'UserController');
