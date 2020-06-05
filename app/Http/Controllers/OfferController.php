@@ -63,7 +63,10 @@ class OfferController extends Controller
      */
     public function show(Offer $offer)
     {
-        return response()->json($offer, 200);
+        if ($offer->active === 1 || (auth()->guard('api')->user() && auth()->guard('api')->user()->id === $offer->owner)) {
+            return response()->json($offer, 200);
+        }
+        abort(404);
     }
 
     /**

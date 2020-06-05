@@ -34,16 +34,13 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::get('/user/offers', function (Request $request) {
+        return $request->user()->offers();
+    });
 
     Route::apiResource('offers', 'OfferController')->except(['index', 'show']);
 
     Route::post('/offers/{offer}/report', 'OfferReportController@store')->name('offer-reports.store');
-
-    Route::bind('offer', function ($id) {
-        return \App\Offer::where('id', $id)
-            ->where('active', 1)
-            ->firstOrFail();
-    });
 
     Route::middleware('admin')->prefix('admin')->group(function () {
         Route::get('offer-reports', 'OfferReportController@index')->name('offer-reports.index');

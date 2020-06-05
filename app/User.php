@@ -47,4 +47,9 @@ class User extends Authenticatable
     {
         return Image::where('type', 'profile_image')->where('resource_id', $this->id)->get();
     }
+
+    public function offers()
+    {
+        return Offer::where('owner', $this->id)->paginate(15);
+    }
 }
