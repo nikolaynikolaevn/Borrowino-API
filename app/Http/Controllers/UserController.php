@@ -81,6 +81,6 @@ class UserController extends Controller
 
     public function getUserOffers(User $user)
     {
-        return response()->json(Offer::where('owner', $user->id)->paginate(15));
+        return response()->json(Offer::where('owner', $user->id)->where('active', '1')->latest()->paginate(15));
     }
 }

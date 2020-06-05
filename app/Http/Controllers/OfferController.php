@@ -16,7 +16,7 @@ class OfferController extends Controller
      */
     public function index()
     {
-        $offers = Offer::latest()->paginate(15);
+        $offers = Offer::latest()->where('active', '1')->paginate(15);
         return response()->json($offers, 200);
     }
 
@@ -63,7 +63,6 @@ class OfferController extends Controller
      */
     public function show(Offer $offer)
     {
-//        $offer = Offer::findOrFail($id);
         return response()->json($offer, 200);
     }
 
@@ -87,6 +86,7 @@ class OfferController extends Controller
             'description' => 'required',
             'location' => 'required',
             'price' => 'required|numeric|min:0',
+            'active' => 'required|boolean',
             'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
         ]);
 
