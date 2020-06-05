@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Offer;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -76,5 +77,10 @@ class UserController extends Controller
             return response()->json(null, 204);
         }
         return response()->json(['Message'=>'Unauthorized'],401);
+    }
+
+    public function getUserOffers(User $user)
+    {
+        return response()->json(Offer::where('owner', $user->id)->paginate(15));
     }
 }
