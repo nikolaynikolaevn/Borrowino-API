@@ -32,15 +32,19 @@ Route::middleware('auth:api')->group(function () {
 
     Route::apiResource('offers', 'OfferController')->except(['index', 'show']);
 
-    Route::post('/report/offer', 'OfferReportController@store')->name('offer-reports.store');
+    Route::post('/offers/{offer}/report', 'OfferReportController@store')->name('offer-reports.store');
 
-    Route::middleware('admin')->group(function(){
-        Route::get('/admin/users', 'AdminController@showUsers')->name('admin.users');
-        Route::get('/admin/users/{user}', 'AdminController@showUser')->name('admin.users.show');
-        Route::delete('admin/users/{user}', 'AdminController@deleteUser')->name('offer.users.delete');
-        Route::get('/admin/offers', 'AdminController@viewOffers')->name('admin.offers');
-        Route::get('/admin/offers/{offer}', 'AdminController@viewOffer')->name('admin.offers.show');
-        Route::delete('admin/offers/{offer}', 'AdminController@deleteOffer')->name('offer.offers.delete');
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        Route::get('offer-reports', 'OfferReportController@index')->name('offer-reports.index');
+        Route::get('offer-reports/{offer_report}', 'OfferReportController@show')->name('offer-reports.show');
+        Route::delete('offer-reports/{offer_report}', 'OfferReportController@destroy')->name('offer-reports.delete');
+
+        Route::get('users', 'AdminController@showUsers')->name('admin.users');
+        Route::get('users/{user}', 'AdminController@showUser')->name('admin.users.show');
+        Route::delete('users/{user}', 'AdminController@deleteUser')->name('offer.users.delete');
+        Route::get('offers', 'AdminController@viewOffers')->name('admin.offers');
+        Route::get('offers/{offer}', 'AdminController@viewOffer')->name('admin.offers.show');
+        Route::delete('offers/{offer}', 'AdminController@deleteOffer')->name('offer.offers.delete');
     });
 });
 
