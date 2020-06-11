@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Offer;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WorkaroundUserController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        //
+        $users = User::select(['id','name','created_at'])->paginate(15);
+        return response()->json($users, 200);
     }
 
     /**
@@ -32,11 +35,11 @@ class WorkaroundUserController extends Controller
      * Display the specified resource.
      *
      * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(User $user)
     {
-        //
+        return response()->json($user->only(['id', 'name', 'created_at']), 200);
     }
 
     /**
@@ -44,22 +47,41 @@ class WorkaroundUserController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, User $user)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|max:55',
+            'email' => 'email|required|unique:users',
+            'password' => 'required|confirmed', // This means that there needs to be a field called password_confirmation
+        ]);
+
+        if (Auth::user()->id === $user->id) {
+            $user->update($validatedData);
+            return response()->json($user, 200);
+        }
+        return response()->json(['Message'=>'Unauthorized'],401);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(User $user)
     {
-        //
+        if (Auth::user()->id === $user->id) {
+            $user->delete();
+            return response()->json(null, 204);
+        }
+        return response()->json(['Message'=>'Unauthorized'],401);
+    }
+
+    public function getUserOffers(User $user)
+    {
+        return response()->json(Offer::where('owner', $user->id)->where('active', '1')->latest()->paginate(15));
     }
 
     /**

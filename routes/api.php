@@ -21,8 +21,8 @@ Route::get('offers/{offer}', 'OfferController@show')->name('offers.show');
 
 Route::get('/offers/{offer}/images', 'OfferController@images')->name('offers.images');
 
-Route::apiResource('users', 'UserController');
-Route::get('/users/{user}/offers', 'UserController@getUserOffers')->name('users.offers');
+Route::apiResource('users', 'WorkaroundUserController');
+Route::get('/users/{user}/offers', 'WorkaroundUserController@getUserOffers')->name('users.offers');
 Route::get('/users/{user}/images', 'WorkaroundUserController@images')->name('users.images');
 
 Route::get('/search', 'SearchController@searchOffer')->name('search');
@@ -31,12 +31,12 @@ Route::apiResource('offer-requests', 'OfferRequestController');
 
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', 'AuthController@logout')->name('logout');
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
-    Route::get('/user/offers', function (Request $request) {
-        return $request->user()->offers();
-    });
+//    Route::get('/user', function (Request $request) {
+//        return $request->user();
+//    });
+//    Route::get('/user/offers', function (Request $request) {
+//        return $request->user()->offers();
+//    });
 
     Route::apiResource('offers', 'OfferController')->except(['index', 'show']);
 
