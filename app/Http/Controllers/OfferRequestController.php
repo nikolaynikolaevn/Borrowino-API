@@ -101,14 +101,13 @@ class OfferRequestController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function destroy($offer_id, OfferRequest $offerRequest)
+    public function destroy($offer_id, OfferRequest $request)
     {
-        dd($offerRequest->from);
-        if (Auth::user()->id !== $offerRequest->borrower) {
+        if (Auth::user()->id !== $request->borrower) {
             return response()->json(['Message'=>'Unauthorized'],401);
         }
 
-        $offerRequest->delete();
+        $request->delete();
         return response()->json(null, 204);
     }
 }

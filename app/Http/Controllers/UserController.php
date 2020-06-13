@@ -57,7 +57,7 @@ class UserController extends Controller
             'password' => 'sometimes|required|confirmed', // This means that there needs to be a field called password_confirmation
         ]);
 
-        if (Auth::user()->id === $user->id) {
+        if (Auth::guard('api')->user()->id === $user->id) {
             $user->update($validatedData);
             return response()->json($user, 200);
         }
