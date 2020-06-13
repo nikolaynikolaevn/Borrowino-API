@@ -14,9 +14,9 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::select(['id','name','created_at'])->paginate(15);
+        $users = User::select(['id','name','email','created_at'])->paginate(15);
         return response()->json($users, 200);
     }
 
@@ -39,7 +39,10 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return response()->json($user->only(['id', 'name', 'created_at']), 200);
+        if (Auth::guard('api')->user()->id === $user->id)
+            return response()->json($user->only(['id', 'name', 'email', 'created_at']), 200);
+        else
+            return response()->json($user->only(['id', 'name', 'created_at']), 200);
     }
 
     /**
@@ -72,7 +75,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if (Auth::user()->id === $user->id) {
+        if (Auth::guard('api')->user()->id === $user->id) {
             $user->delete();
             return response()->json(null, 204);
         }
