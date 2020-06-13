@@ -53,7 +53,7 @@ class UserController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'sometimes|required|max:55',
-            'email' => 'sometimes|required|email|unique:users',
+            'email' => 'sometimes|required|email|unique:users,email,'.$user->id,
             'password' => 'sometimes|required|confirmed', // This means that there needs to be a field called password_confirmation
         ]);
 

@@ -52,12 +52,12 @@ class OfferRequestController extends Controller
      * Display the specified resource.
      *
      * @param $offer_id
-     * @param $offerRequst_id
+     * @param $offerRequest_id
      * @return OfferRequest
      */
-    public function show($offer_id, $offerRequst_id)
+    public function show($offer_id, $offerRequest_id)
     {
-        return OfferRequest::where('offer', $offer_id)->findOrFail($offerRequst_id);
+        return OfferRequest::where('offer', $offer_id)->findOrFail($offerRequest_id);
     }
 
     /**
