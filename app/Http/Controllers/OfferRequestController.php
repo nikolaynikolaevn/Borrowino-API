@@ -68,31 +68,29 @@ class OfferRequestController extends Controller
      * @param \App\OfferRequest $offerRequest
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update($offer_id, Request $request, OfferRequest $offerRequest)
+    public function update($offer_id, Request $http_request, OfferRequest $request)
     {
-        $validatedData = $request->validate([
+        $validatedData = $http_request->validate([
             'from' => 'sometimes|required|date|before_or_equal:until',
             'until' => 'sometimes|required|date|after_or_equal:from',
             'description' => 'max:1000',
             'status' => 'sometimes|in:accepted,declined',
         ]);
+        //dd($validatedData); How odd is it that this always returns an empty array?!
 
-        $offer = Offer::findOrFail($offerRequest->offer);
+        $offer = Offer::findOrFail($offer_id);
         $owner = User::find($offer->owner);
 
-        if (Auth::user()->id !== $owner->id && Auth::user()->id !== $offerRequest->borrower) {
+        if (Auth::user()->id !== $owner->id && Auth::user()->id !== $http_request->borrower) {
             return response()->json(['Message'=>'Unauthorized'],401);
         }
 
-        if (Auth::user()->id === $owner->id) {
-            $validatedData->status = $request->status;
-        }
-        else {
-            $validatedData->status = $offerRequest->status;
+        if (Auth::user()->id !== $owner->id) {
+            $validatedData['status'] = $request->status;
         }
 
-        $offerRequest->update($validatedData);
-        return response()->json($offerRequest, 200);
+        $request->update($validatedData);
+        return response()->json($request, 200);
     }
 
     /**
@@ -105,6 +103,7 @@ class OfferRequestController extends Controller
      */
     public function destroy($offer_id, OfferRequest $offerRequest)
     {
+        dd($offerRequest->from);
         if (Auth::user()->id !== $offerRequest->borrower) {
             return response()->json(['Message'=>'Unauthorized'],401);
         }

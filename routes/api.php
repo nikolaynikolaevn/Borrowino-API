@@ -20,7 +20,6 @@ Route::get('offers', 'OfferController@index')->name('offers.index');
 Route::get('offers/{offer}', 'OfferController@show')->name('offers.show');
 
 Route::get('/offers/{offer}/images', 'OfferController@images')->name('offers.images');
-Route::apiResource('offers.requests', 'OfferRequestController');
 
 Route::apiResource('users', 'UserController');
 Route::get('/users/{user}/offers', 'UserController@getUserOffers')->name('users.offers');
@@ -38,6 +37,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::apiResource('offers', 'OfferController')->except(['index', 'show']);
+    Route::apiResource('offers.requests', 'OfferRequestController');
 
     Route::post('/offers/{offer}/report', 'OfferReportController@store')->name('offer-reports.store');
 
