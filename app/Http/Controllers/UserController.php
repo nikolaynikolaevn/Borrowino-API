@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::select(['id','name','email','created_at'])->paginate(15);
+        $users = User::select(['id','name','email','images','created_at'])->paginate(15);
         return response()->json($users, 200);
     }
 
@@ -40,9 +40,9 @@ class UserController extends Controller
     public function show(User $user)
     {
         if (Auth::guard('api')->user() && Auth::guard('api')->user()->id === $user->id)
-            return response()->json($user->only(['id', 'name', 'email', 'created_at']), 200);
+            return response()->json($user->only(['id', 'name', 'email', 'images', 'created_at']), 200);
         else
-            return response()->json($user->only(['id', 'name', 'created_at']), 200);
+            return response()->json($user->only(['id', 'name', 'images', 'created_at']), 200);
     }
 
     /**
