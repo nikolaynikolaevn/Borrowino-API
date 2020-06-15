@@ -58,10 +58,22 @@ class UserController extends Controller
             'name' => 'sometimes|required|max:55',
             'email' => 'sometimes|required|email|unique:users,email,'.$user->id,
             'password' => 'sometimes|required|confirmed', // This means that there needs to be a field called password_confirmation
+            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg,webp|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
         ]);
+
+        $validatedData['password'] = bcrypt($validatedData['password']);
 
         if (Auth::guard('api')->user()->id === $user->id) {
             $user->update($validatedData);
+
+            if (array_key_exists('images', $validatedData)) {
+                (new ImageController)->deleteImages($user->id, 'profile_image');
+                $user->images = true;
+                $user->save();
+
+                (new ImageController)->uploadImages($validatedData['images'], $user->id, 'profile_image');
+            }
+
             return response()->json($user, 200);
         }
         return response()->json(['Message'=>'Unauthorized'],401);
@@ -76,10 +88,24 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if (Auth::guard('api')->user()->id === $user->id) {
+            (new ImageController)->deleteImages($user->id, 'profile_image');
             $user->delete();
             return response()->json(null, 204);
         }
         return response()->json(['Message'=>'Unauthorized'],401);
+    }
+
+    /**
+     * @param \App\User $user
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function images(User $user)
+    {
+        $fileNames = (new ImageController)->fetchImages($user->id, 'profile_image');
+        if ($fileNames == null) {
+            return response()->json(['Message' => 'No images found'], 404);
+        }
+        return response()->json(['images' => $fileNames], 200);
     }
 
     public function getUserOffers(User $user)

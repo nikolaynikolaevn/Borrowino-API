@@ -14,11 +14,19 @@ class AuthController extends Controller
             'name' => 'required|max:55',
             'email' => 'email|required|unique:users',
             'password' => 'required|confirmed', // This means that there needs to be a field called password_confirmation
+            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg,webp|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
         ]);
 
         $validatedData['password'] = bcrypt($validatedData['password']);
 
         $user = User::create($validatedData);
+
+        if (array_key_exists('images', $validatedData)) {
+            $user->images = true;
+            $user->save();
+
+            (new ImageController)->uploadImages($validatedData['images'], $user->id, 'profile_image');
+        }
 
         $accessToken = $user->createToken('authToken')->accessToken;
 
