@@ -39,7 +39,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        if (Auth::guard('api')->user()->id === $user->id)
+        if (Auth::guard('api')->user() && Auth::guard('api')->user()->id === $user->id)
             return response()->json($user->only(['id', 'name', 'email', 'created_at']), 200);
         else
             return response()->json($user->only(['id', 'name', 'created_at']), 200);
