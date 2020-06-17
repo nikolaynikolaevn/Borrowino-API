@@ -33,7 +33,9 @@ class AdminController extends Controller
             'is_admin' => 'sometimes|boolean',
         ]);
 
-        $validatedData['password'] = bcrypt($validatedData['password']);
+        if (array_key_exists('password', $validatedData)) {
+            $validatedData['password'] = bcrypt($validatedData['password']);
+        }
 
         $user->update($validatedData);
 
