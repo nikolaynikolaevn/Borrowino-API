@@ -29,7 +29,8 @@ class AdminController extends Controller
             'name' => 'sometimes|required|max:55',
             'email' => 'sometimes|required|email|unique:users,email,'.$user->id,
             'password' => 'sometimes|required|confirmed', // This means that there needs to be a field called password_confirmation
-            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg,webp|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
+            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg,webp|max:10240', // 'images.*' because there can be multiple imagesMax 10mB
+            'is_admin' => 'sometimes|boolean',
         ]);
 
         $validatedData['password'] = bcrypt($validatedData['password']);
