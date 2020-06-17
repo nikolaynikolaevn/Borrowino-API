@@ -35,6 +35,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/user/offers', function (Request $request) {
         return $request->user()->offers();
     });
+    Route::get('/user/received-requests', 'UserController@getReceivedOfferRequests')->name('users.received-requests');
 
     Route::apiResource('offers', 'OfferController')->except(['index', 'show']);
     Route::apiResource('offers.requests', 'OfferRequestController');

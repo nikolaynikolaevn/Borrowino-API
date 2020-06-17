@@ -52,4 +52,16 @@ class User extends Authenticatable
     {
         return Offer::where('owner', $this->id)->paginate(15);
     }
+
+    public function received_requests()
+    {
+        return $this->hasManyThrough(
+            OfferRequest::class,
+            Offer::class,
+            'owner',
+            'offer',
+            'id',
+            'id'
+        );
+    }
 }

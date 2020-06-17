@@ -24,4 +24,9 @@ class Offer extends Model
     {
         return Image::where('type', 'offer_image')->where('resource_id', $this->id)->get();
     }
+
+    public function requests()
+    {
+        return $this->hasMany(OfferRequest::class, 'offer');
+    }
 }

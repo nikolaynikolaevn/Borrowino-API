@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Offer;
+use App\OfferRequest;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -111,5 +112,11 @@ class UserController extends Controller
     public function getUserOffers(User $user)
     {
         return response()->json(Offer::where('owner', $user->id)->where('active', '1')->latest()->paginate(15));
+    }
+
+    public function getReceivedOfferRequests()
+    {
+        $user = Auth::guard('api')->user();
+        return response()->json($user->received_requests()->where('active', '1')->latest()->paginate(15));
     }
 }
