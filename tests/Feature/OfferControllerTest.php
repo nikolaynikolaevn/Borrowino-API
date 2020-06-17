@@ -45,7 +45,7 @@ class OfferControllerTest extends TestCase
         $this->actingAs($this->user, 'api')->getJson(route('offers.index'))
             ->assertStatus(200)
             ->assertJsonStructure([
-                'data' => ['*' => ['id', 'created_at', 'updated_at', 'title', 'description', 'location', 'price', 'owner']]
+                'data' => ['*' => ['id', 'created_at', 'updated_at', 'title', 'description', 'expires', 'location', 'price', 'owner']]
             ])
             ->assertJson(['data' => $offersExpected->toArray()]);
     }
@@ -165,8 +165,8 @@ class OfferControllerTest extends TestCase
 
         $this->assertEquals(2, count($imagesInDatabase));
 
-        $this->assertFileExists(public_path($imagesInDatabase[0]->path_to_image));
-        $this->assertFileExists(public_path($imagesInDatabase[1]->path_to_image));
+        $this->assertFileExists(public_path(rawurldecode($imagesInDatabase[0]->path_to_image)));
+        $this->assertFileExists(public_path(rawurldecode($imagesInDatabase[1]->path_to_image)));
 
         return $response;
     }

@@ -55,7 +55,7 @@ class ImageController extends Controller
 
             $imageDatabaseReference = new Image();
             $imageDatabaseReference->resource_id = $resourceId;
-            $imageDatabaseReference->path_to_image = $path.urlencode($name);
+            $imageDatabaseReference->path_to_image = $path.rawurlencode($name);
             $imageDatabaseReference->type = $resourceType;
             $imageDatabaseReference->save();
 
