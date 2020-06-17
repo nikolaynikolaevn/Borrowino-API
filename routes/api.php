@@ -49,6 +49,7 @@ Route::middleware('auth:api')->group(function () {
 
         Route::get('users', 'AdminController@showUsers')->name('admin.users');
         Route::get('users/{user}', 'AdminController@showUser')->name('admin.users.show');
+        Route::put('users/{user}', 'AdminController@updateUser')->name('admin.users.update');
         Route::delete('users/{user}', 'AdminController@deleteUser')->name('offer.users.delete');
         Route::get('offers', 'AdminController@viewOffers')->name('admin.offers');
         Route::get('offers/{offer}', 'AdminController@viewOffer')->name('admin.offers.show');

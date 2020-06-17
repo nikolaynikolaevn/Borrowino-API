@@ -23,6 +23,30 @@ class AdminController extends Controller
         return response()->json($users, 200);
     }
 
+    public function updateUser(Request $request, User $user)
+    {
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|max:55',
+            'email' => 'sometimes|required|email|unique:users,email,'.$user->id,
+            'password' => 'sometimes|required|confirmed', // This means that there needs to be a field called password_confirmation
+            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg,webp|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
+        ]);
+
+        $validatedData['password'] = bcrypt($validatedData['password']);
+
+        $user->update($validatedData);
+
+        if (array_key_exists('images', $validatedData)) {
+            (new ImageController)->deleteImages($user->id, 'profile_image');
+            $user->images = true;
+            $user->save();
+
+            (new ImageController)->uploadImages($validatedData['images'], $user->id, 'profile_image');
+        }
+
+        return response()->json($user, 200);
+    }
+
     public function deleteUser(User $user)
     {
         $user->delete();
