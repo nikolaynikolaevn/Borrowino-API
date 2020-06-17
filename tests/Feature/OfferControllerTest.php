@@ -329,8 +329,8 @@ class OfferControllerTest extends TestCase
         $this->assertFileNotExists(public_path($imagesToBeDeleted[0]->path_to_image), 'Image not deleted from disk');
         $this->assertFileNotExists(public_path($imagesToBeDeleted[1]->path_to_image), 'Image not deleted from disk');
 
-        $this->assertFileExists(public_path($offerImages[0]->path_to_image), 'Image not saved to disk');
-        $this->assertFileExists(public_path($offerImages[1]->path_to_image), 'Image not saved to disk');
+        $this->assertFileExists(public_path(rawurldecode($offerImages[0]->path_to_image)), 'Image not saved to disk');
+        $this->assertFileExists(public_path(rawurldecode($offerImages[1]->path_to_image)), 'Image not saved to disk');
     }
 
     /**

@@ -41,8 +41,8 @@ class ImageControllerTest extends TestCase
             ->get();
 
         // Assert
-        $this->assertFileExists(public_path($imagesInDatabase[0]->path_to_image));
-        $this->assertFileExists(public_path($imagesInDatabase[1]->path_to_image));
+        $this->assertFileExists(public_path(rawurldecode($imagesInDatabase[0]->path_to_image)));
+        $this->assertFileExists(public_path(rawurldecode($imagesInDatabase[1]->path_to_image)));
     }
 
     /**
@@ -60,7 +60,7 @@ class ImageControllerTest extends TestCase
             ->get();
 
         // Assert
-        $this->assertFileExists(public_path($imagesInDatabase[0]->path_to_image));
+        $this->assertFileExists(public_path(rawurldecode($imagesInDatabase[0]->path_to_image)));
     }
 
     /**

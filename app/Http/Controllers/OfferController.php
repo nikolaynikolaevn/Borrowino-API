@@ -33,7 +33,8 @@ class OfferController extends Controller
             'description' => 'required',
             'location' => 'required',
             'price' => 'required|numeric|min:0',
-            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg,webp|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
+            'expires' => 'sometimes|required|date',
+            'images.*' => 'sometimes|image|mimes:jpg,jpeg,gif,png,svg,webp|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
         ]);
 
         $offer = new Offer();
@@ -89,8 +90,9 @@ class OfferController extends Controller
             'description' => 'required',
             'location' => 'required',
             'price' => 'required|numeric|min:0',
-            'active' => 'required|boolean',
-            'images.*' => 'image|mimes:jpg,jpeg,gif,png,svg|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
+            'active' => 'sometimes|required|boolean',
+            'expires' => 'sometimes|required|date',
+            'images.*' => 'sometimes|image|mimes:jpg,jpeg,gif,png,svg|max:10240' // 'images.*' because there can be multiple imagesMax 10mB
         ]);
 
         $offer->update($validatedData);
