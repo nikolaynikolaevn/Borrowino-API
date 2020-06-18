@@ -64,4 +64,9 @@ class User extends Authenticatable
             'id'
         );
     }
+
+    public function sent_requests()
+    {
+        return OfferRequest::where('borrower', $this->id)->paginate(15);
+    }
 }
